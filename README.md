@@ -41,16 +41,22 @@ If the serial is not registered on the server, firmware logs
 `DEVICE_NOT_REGISTERED`. Register that serial in the SensMonitor application,
 then restart the device so it requests configuration again.
 
+## Dependencies
+
+ESP-IDF Component Manager downloads these public Git dependencies
+automatically:
+
+- `https://github.com/sensmonitor/smonitor-modem`
+- `https://github.com/sensmonitor/smonitor-i2c-reader`
+
+They are declared in `main/idf_component.yml` and installed under
+`managed_components/`. Users do not need sibling repository checkouts.
+
+The current manifests follow the `main` branches, while `dependencies.lock`
+records the exact resolved commits. Tagged releases should replace branch
+references when the first stable component versions are published.
+
 ## Repository Layout
-
-Keep the firmware repository next to its local ESP-IDF components:
-
-```text
-Code/
-  smonitor-iot/
-  smonitor-modem/
-  smonitor-i2c-reader/
-```
 
 Current project layout:
 
@@ -114,7 +120,8 @@ The default BME280 address is `0x76`.
 
 ## Build
 
-Activate ESP-IDF 5.5.4, then build:
+Activate ESP-IDF 5.5.4, then build. Internet access is required during the
+first build so Component Manager can download dependencies:
 
 ```bash
 cd smonitor-iot
@@ -161,19 +168,19 @@ Important options:
 | `CONFIG_SMONITOR_MODEM_NETWORK_AUTO` | Let modem/operator choose automatically. |
 | `CONFIG_SMONITOR_MODEM_CONNECT_TIMEOUT_MS` | PPP connection timeout. Default `180000`. |
 
-For the tested local `vipmobile` setup:
+Example operator configuration:
 
 ```text
-CONFIG_SMONITOR_MODEM_APN="vipmobile"
-CONFIG_SMONITOR_MODEM_USERNAME="vipmobile"
-CONFIG_SMONITOR_MODEM_PASSWORD="vipmobile"
+CONFIG_SMONITOR_MODEM_APN="your-apn"
+CONFIG_SMONITOR_MODEM_USERNAME=""
+CONFIG_SMONITOR_MODEM_PASSWORD=""
 CONFIG_SMONITOR_MODEM_AUTH_NONE=y
 CONFIG_SMONITOR_MODEM_NETWORK_NB_IOT=y
 CONFIG_SMONITOR_MODEM_LTE_BAND=20
 ```
 
-Although username and password are shown here, the tested SIM7000G flow uses
-`AUTH_NONE`. Enable PAP only if your operator requires it.
+Use the APN, authentication mode, network technology and radio band supplied
+by your mobile operator. Enable PAP only if the operator requires it.
 
 ### I2C Sensor
 

@@ -47,11 +47,35 @@ dependencies:
     source:
       type: idf
     version: 5.5.4
+  smonitor-i2c-reader:
+    component_hash: e99563abc00dbda4968c0af2064b53aca98010b002a6c35a0f856a308e1ff62d
+    dependencies:
+    - name: idf
+      version: '>=5.3'
+    - name: espressif/i2c_bus
+      version: ^1.2.0
+    source:
+      git: https://github.com/sensmonitor/smonitor-i2c-reader.git
+      path: .
+      type: git
+    version: 3c40f3e9c50ed0a49c5b3f520d1621b67259a4d9
+  smonitor-modem:
+    component_hash: ef732c5ba30a5785c5df4eeef9db9b8656cc6c88cb1b7ff11f70f8576bea1e49
+    dependencies:
+    - name: idf
+      version: '>=5.5,<5.6'
+    - name: espressif/esp_modem
+      version: ^1.4.0
+    source:
+      git: https://github.com/sensmonitor/smonitor-modem.git
+      path: .
+      type: git
+    version: ff05bfc04807f2486a8000f1d28ce67e36875896
 direct_dependencies:
-- espressif/esp_modem
 - espressif/esp_websocket_client
-- espressif/i2c_bus
 - idf
-manifest_hash: 1ceab5b7e92128c97e1d4d67c2f28cdf0e3ead59092bb7fafd5284553523f1d8
+- smonitor-i2c-reader
+- smonitor-modem
+manifest_hash: cf4ba237b758fca470baf6401c12d98b213d22fa5d96a47f57f925db4e7fecbb
 target: esp32
 version: 2.0.0
