@@ -1,4 +1,5 @@
-# SensMonitor IoT Ciient (web app on https://app.sensmonitor.com/ )
+# SensMonitor IoT Client
+Web App: https://app.sensmonitor.com/
 
 Public ESP32 firmware for SensMonitor devices.
 
@@ -9,10 +10,9 @@ the SensMonitor WebSocket endpoint.
 
 The first supported hardware profile is:
 
-- ESP32 target
-- LilyGO T-SIM7000G board
-- SIM7000 modem over UART
-- BME280 I2C environmental sensor
+- ESP32 target (LilyGO T-SIM7000G board example)
+- Cellular modem (SIM7000 modem over UART example)
+- I2C sensor (BME280 example)
 - ESP-IDF 5.5.4
 
 ## What This Firmware Does
