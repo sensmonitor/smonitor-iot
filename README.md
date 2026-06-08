@@ -1,4 +1,4 @@
-# smonitor-iot
+# SensMonitor IoT Ciient (web app on https://app.sensmonitor.com/ )
 
 Public ESP32 firmware for SensMonitor devices.
 
