@@ -1,0 +1,39 @@
+menu "SensMonitor IoT"
+
+    config SMONITOR_MODEM_APN
+        string "Mobile network APN"
+        default ""
+        help
+            Required for a production build. It is empty by default so an
+            operator profile cannot be selected accidentally.
+
+    config SMONITOR_MODEM_USERNAME
+        string "PPP authentication username"
+        default ""
+
+    config SMONITOR_MODEM_PASSWORD
+        string "PPP authentication password"
+        default ""
+
+    choice SMONITOR_MODEM_NETWORK
+        prompt "Preferred mobile network"
+        default SMONITOR_MODEM_NETWORK_AUTO
+
+        config SMONITOR_MODEM_NETWORK_AUTO
+            bool "Automatic"
+        config SMONITOR_MODEM_NETWORK_LTE_M
+            bool "LTE-M"
+        config SMONITOR_MODEM_NETWORK_NB_IOT
+            bool "NB-IoT"
+        config SMONITOR_MODEM_NETWORK_GPRS
+            bool "GPRS"
+    endchoice
+
+    config SMONITOR_DEVICE_TOKEN
+        string "SensMonitor device token"
+        default ""
+        help
+            Stored in build configuration for the first release. A later
+            release will provision and store this value in NVS.
+
+endmenu
