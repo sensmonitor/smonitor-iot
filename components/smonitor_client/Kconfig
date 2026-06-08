@@ -1,0 +1,12 @@
+menu "SensMonitor client"
+
+    config SMONITOR_WEBSOCKET_URI
+        string "SensMonitor WebSocket URI"
+        default "wss://api.sensmonitor.com:9002/app/k8jv6az2crdm6nczlscm?protocol=7&client=esp32&version=1.0.0&flash=false"
+
+    config SMONITOR_CLIENT_TIME_SYNC_RETRIES
+        int "SNTP synchronization attempts"
+        default 10
+        range 1 60
+
+endmenu

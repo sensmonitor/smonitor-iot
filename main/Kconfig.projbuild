@@ -15,9 +15,24 @@ menu "SensMonitor IoT"
         string "PPP authentication password"
         default ""
 
+    choice SMONITOR_MODEM_AUTH
+        prompt "PPP authentication"
+        default SMONITOR_MODEM_AUTH_NONE
+
+        config SMONITOR_MODEM_AUTH_NONE
+            bool "None"
+            help
+                Matches the known-good LilyGO SIM7000G modem_console flow.
+
+        config SMONITOR_MODEM_AUTH_PAP
+            bool "PAP"
+            help
+                Uses the configured PPP username and password.
+    endchoice
+
     choice SMONITOR_MODEM_NETWORK
         prompt "Preferred mobile network"
-        default SMONITOR_MODEM_NETWORK_AUTO
+        default SMONITOR_MODEM_NETWORK_NB_IOT
 
         config SMONITOR_MODEM_NETWORK_AUTO
             bool "Automatic"
@@ -35,5 +50,62 @@ menu "SensMonitor IoT"
         help
             Stored in build configuration for the first release. A later
             release will provision and store this value in NVS.
+
+    config SMONITOR_SAMPLE_INTERVAL_MS
+        int "Sample interval in milliseconds"
+        default 5000
+        range 1000 3600000
+
+    config SMONITOR_MODEM_CONNECT_TIMEOUT_MS
+        int "PPP connection timeout in milliseconds"
+        default 180000
+        range 10000 600000
+
+    menu "I2C sensor"
+
+        choice SMONITOR_I2C_SENSOR
+            prompt "Sensor model"
+            default SMONITOR_I2C_SENSOR_BME280
+
+            config SMONITOR_I2C_SENSOR_BME280
+                bool "BME280"
+                help
+                    Bosch temperature, pressure and humidity sensor using the
+                    built-in bosch_bme280 smonitor-i2c-reader driver.
+        endchoice
+
+        config SMONITOR_I2C_PORT
+            int "I2C controller"
+            default 0
+            range 0 1
+
+        config SMONITOR_I2C_SDA_PIN
+            int "I2C SDA GPIO"
+            default 21
+            range 0 39
+
+        config SMONITOR_I2C_SCL_PIN
+            int "I2C SCL GPIO"
+            default 22
+            range 0 39
+
+        config SMONITOR_I2C_FREQUENCY_HZ
+            int "I2C bus frequency"
+            default 100000
+            range 10000 1000000
+
+        config SMONITOR_I2C_INTERNAL_PULLUPS
+            bool "Enable ESP32 internal pull-ups"
+            default y
+            help
+                Internal pull-ups are useful during development but external
+                pull-up resistors are recommended for reliable hardware.
+
+        config SMONITOR_I2C_DEVICE_ADDRESS
+            hex "Sensor I2C address"
+            default 0x76
+            range 0x08 0x77
+
+    endmenu
 
 endmenu
