@@ -177,6 +177,27 @@ bool appendWebsocketFragment(const esp_websocket_event_data_t *data, std::string
     return true;
 }
 
+bool isRegistrationRequiredPayload(const std::string &payload)
+{
+    return payload.find("\"registrationRequired\":true") != std::string::npos ||
+           payload.find("\\\"registrationRequired\\\":true") != std::string::npos ||
+           payload.find("\"status\":\"registration_required\"") != std::string::npos ||
+           payload.find("\\\"status\\\":\\\"registration_required\\\"") != std::string::npos;
+}
+
+void pauseForRegistrationRequired(int timeout_ms)
+{
+    ESP_LOGE(TAG, "DEVICE_NOT_REGISTERED: Device %s did not receive configuration after %d seconds.",
+             device_serial.c_str(), timeout_ms / 1000);
+    ESP_LOGE(TAG, "Register using:");
+    ESP_LOGE(TAG, "  - Web: https://app.sensmonitor.com");
+    ESP_LOGE(TAG, "  - Android: SensMonitor app from Play Store");
+
+    while (true) {
+        vTaskDelay(pdMS_TO_TICKS(60000));
+    }
+}
+
 } // namespace
 
 bool hasDeviceConfig()
@@ -218,7 +239,7 @@ bool waitForDeviceConfig(int timeout_ms)
     int waited_ms = 0;
     while (!hasDeviceConfig()) {
         if (registration_required) {
-            return false;
+            pauseForRegistrationRequired(waited_ms);
         }
         ensureConfigRequestFlow();
 
@@ -228,7 +249,7 @@ bool waitForDeviceConfig(int timeout_ms)
 
         waited_ms += kConfigRetryMs;
         if (registration_required) {
-            return false;
+            pauseForRegistrationRequired(waited_ms);
         }
         ESP_LOGW(TAG, "Still waiting for device config after %d ms.", waited_ms);
 
@@ -314,12 +335,11 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
                 updateDigitalIoConfig(digital_ios);
                 ESP_LOGI(TAG, "Applied digital I/O config from ack with %d rows.", static_cast<int>(digital_ios.size()));
             }
-        } else if (payload.find("\"registrationRequired\":true") != std::string::npos ||
-                   payload.find("\"status\":\"registration_required\"") != std::string::npos) {
+        } else if (isRegistrationRequiredPayload(payload)) {
             registration_required = true;
-            ESP_LOGE(TAG,
-                     "DEVICE_NOT_REGISTERED: Register device %s in the SensMonitor application.",
-                     device_serial.c_str());
+            if (config_semaphore != nullptr) {
+                xSemaphoreGive(config_semaphore);
+            }
         } else {
             DeviceConfig parsed_config;
             if (handleDeviceConfigPayload(payload, parsed_config)) {
