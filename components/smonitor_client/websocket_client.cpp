@@ -407,7 +407,8 @@ void sendData(std::string data)
     }
 }
 
-void sendSample(const smonitor_i2c_sample_t *samples, std::size_t sample_count)
+void sendSample(const smonitor_i2c_sample_t *samples, std::size_t sample_count,
+                int battery_percent)
 {
     if (registration_required) {
         ESP_LOGW(TAG, "Skipping sample: device registration is required.");
@@ -419,7 +420,8 @@ void sendSample(const smonitor_i2c_sample_t *samples, std::size_t sample_count)
     }
 
     std::string json =
-        formatJSON(samples, sample_count, getDeviceConfig(), device_serial);
+        formatJSON(samples, sample_count, getDeviceConfig(), device_serial,
+                   battery_percent);
     sendData(json);
 }
 
@@ -456,7 +458,8 @@ extern "C" smonitor_client_status_t smonitor_client_status(void)
 
 extern "C" esp_err_t smonitor_client_send_samples(
     const smonitor_i2c_sample_t *samples,
-    size_t sample_count)
+    size_t sample_count,
+    int battery_percent)
 {
     if (samples == nullptr && sample_count > 0) {
         return ESP_ERR_INVALID_ARG;
@@ -465,7 +468,7 @@ extern "C" esp_err_t smonitor_client_send_samples(
         return ESP_ERR_INVALID_STATE;
     }
 
-    sendSample(samples, sample_count);
+    sendSample(samples, sample_count, battery_percent);
     return ESP_OK;
 }
 

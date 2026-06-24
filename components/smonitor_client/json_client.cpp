@@ -382,11 +382,12 @@ bool handleDigitalIoConfigPayload(const std::string &payload, std::vector<Digita
 std::string formatJSON(const smonitor_i2c_sample_t *samples,
                        std::size_t sample_count,
                        const DeviceConfig &config,
-                       const std::string &device_serial)
+                       const std::string &device_serial,
+                       int battery_percent)
 {
     cJSON *data = cJSON_CreateObject();
     cJSON_AddStringToObject(data, "deviceId", device_serial.c_str());
-    cJSON_AddNumberToObject(data, "battery", 50);
+    cJSON_AddNumberToObject(data, "battery", battery_percent);
 
     cJSON *sensors = cJSON_CreateArray();
     cJSON_AddItemToObject(data, "sensors", sensors);

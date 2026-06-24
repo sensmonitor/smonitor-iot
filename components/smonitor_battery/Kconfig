@@ -1,0 +1,34 @@
+menu "SensMonitor battery"
+
+    config SMONITOR_BATTERY_ADC_GPIO
+        int "Battery ADC GPIO"
+        default 35
+        range 0 39
+        help
+            ESP32 GPIO connected to the battery voltage divider. The LilyGO
+            T-SIM7000G profile uses GPIO35.
+
+    config SMONITOR_BATTERY_DIVIDER_RATIO_MILLI
+        int "Battery divider ratio x1000"
+        default 2000
+        range 1000 10000
+        help
+            Voltage divider multiplier in milli-units. Use 2000 for a 2.0x
+            divider ratio.
+
+    config SMONITOR_BATTERY_ADC_SAMPLE_COUNT
+        int "Battery ADC sample count"
+        default 16
+        range 1 128
+        help
+            Number of ADC readings averaged for one battery measurement.
+
+    config SMONITOR_BATTERY_READ_INTERVAL_SECONDS
+        int "Battery read interval in seconds"
+        default 300
+        range 0 86400
+        help
+            Period for reading battery voltage. A value of 0 disables periodic
+            reads and keeps the fallback value.
+
+endmenu

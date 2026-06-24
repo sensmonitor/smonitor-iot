@@ -8,6 +8,7 @@
 #include "freertos/task.h"
 #include "sdkconfig.h"
 #include "sensor_runtime.hpp"
+#include "smonitor_battery.h"
 #include "smonitor_client.h"
 #include "smonitor_modem.h"
 
@@ -15,6 +16,7 @@ namespace {
 
 constexpr const char *TAG = "smonitor_iot";
 constexpr std::size_t kMaxSensorSamples = 16;
+constexpr int kFallbackBatteryPercent = 50;
 
 smonitor_modem_network_t configuredNetwork()
 {
@@ -41,6 +43,33 @@ void logSamples(const smonitor_i2c_sample_t *samples, std::size_t sample_count)
     }
 }
 
+void updateBatteryIfDue(int &battery_percent, TickType_t &next_battery_read_time)
+{
+    if (CONFIG_SMONITOR_BATTERY_READ_INTERVAL_SECONDS == 0) {
+        return;
+    }
+
+    const TickType_t now = xTaskGetTickCount();
+    if ((int32_t)(now - next_battery_read_time) < 0) {
+        return;
+    }
+
+    smonitor_battery_status_t battery = {};
+    const esp_err_t result = smonitor_battery_read(&battery);
+    if (result == ESP_OK && battery.valid) {
+        battery_percent = battery.percent;
+        ESP_LOGI(TAG, "Battery cache updated: %d%% (%d mV)",
+                 battery.percent, battery.voltage_mv);
+    } else {
+        ESP_LOGW(TAG, "Battery read failed: %s; keeping %d%%",
+                 esp_err_to_name(result), battery_percent);
+    }
+
+    next_battery_read_time =
+        now + pdMS_TO_TICKS(CONFIG_SMONITOR_BATTERY_READ_INTERVAL_SECONDS *
+                            1000);
+}
+
 } // namespace
 
 void smonitor_app_run(void)
@@ -50,6 +79,7 @@ void smonitor_app_run(void)
     ESP_LOGI(TAG, "Device serial: %s", serial.c_str());
 
     ESP_ERROR_CHECK(smonitor_sensor_init());
+    ESP_ERROR_CHECK(smonitor_battery_init());
 
     if (CONFIG_SMONITOR_MODEM_APN[0] == '\0') {
         ESP_LOGE(TAG,
@@ -86,8 +116,12 @@ void smonitor_app_run(void)
         }
     }
 
+    int battery_percent = kFallbackBatteryPercent;
+    TickType_t next_battery_read_time = xTaskGetTickCount();
     TickType_t next_sample_time = xTaskGetTickCount();
     while (true) {
+        updateBatteryIfDue(battery_percent, next_battery_read_time);
+
         smonitor_i2c_sample_t samples[kMaxSensorSamples] = {};
         std::size_t sample_count = 0;
         const esp_err_t read_result = smonitor_sensor_read(
@@ -96,7 +130,8 @@ void smonitor_app_run(void)
         logSamples(samples, sample_count);
         if (read_result == ESP_OK) {
             const esp_err_t send_result =
-                smonitor_client_send_samples(samples, sample_count);
+                smonitor_client_send_samples(samples, sample_count,
+                                             battery_percent);
             if (send_result != ESP_OK &&
                 send_result != ESP_ERR_INVALID_STATE) {
                 ESP_LOGW(TAG, "Sample send failed: %s",
