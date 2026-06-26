@@ -30,7 +30,7 @@ dependencies:
       type: service
     version: 1.7.0
   espressif/i2c_bus:
-    component_hash: 804ec068d163570fd367b279a310ca383484630d2310c586b50def0bcf21de13
+    component_hash: 483112c1619c54c38d0b734fb25f1678733267858a77b7af2f48cc7db6dbbd84
     dependencies:
     - name: espressif/cmake_utilities
       registry_url: https://components.espressif.com
@@ -42,7 +42,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 1.5.1
+    version: 1.5.2
   idf:
     source:
       type: idf
@@ -60,7 +60,7 @@ dependencies:
       type: git
     version: 3c40f3e9c50ed0a49c5b3f520d1621b67259a4d9
   smonitor-modem:
-    component_hash: ef732c5ba30a5785c5df4eeef9db9b8656cc6c88cb1b7ff11f70f8576bea1e49
+    component_hash: e45b3bf7ff706ffd12922e224f6a9516a4abca216e0a16f7296ad9726c8c0063
     dependencies:
     - name: idf
       version: '>=5.5,<5.6'
@@ -70,7 +70,7 @@ dependencies:
       git: https://github.com/sensmonitor/smonitor-modem.git
       path: .
       type: git
-    version: ff05bfc04807f2486a8000f1d28ce67e36875896
+    version: d8156c690a74fdbf996885868e494c5a0be7acd0
 direct_dependencies:
 - espressif/esp_websocket_client
 - idf
