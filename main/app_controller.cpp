@@ -70,6 +70,27 @@ void updateBatteryIfDue(int &battery_percent, TickType_t &next_battery_read_time
                             1000);
 }
 
+smonitor_client_location_t readCachedLocation()
+{
+    smonitor_modem_location_t modem_location = {};
+    const esp_err_t result = smonitor_modem_get_location(&modem_location);
+
+    smonitor_client_location_t location = {
+        .latitude = modem_location.latitude,
+        .longitude = modem_location.longitude,
+        .valid = result == ESP_OK && modem_location.valid,
+    };
+
+    if (location.valid) {
+        ESP_LOGI(TAG, "Cached GPS location: latitude=%.6f, longitude=%.6f",
+                 location.latitude, location.longitude);
+    } else {
+        ESP_LOGW(TAG, "Cached GPS location is not available; using 0,0");
+    }
+
+    return location;
+}
+
 } // namespace
 
 void smonitor_app_run(void)
@@ -102,6 +123,7 @@ void smonitor_app_run(void)
     ESP_ERROR_CHECK(smonitor_modem_init(&modem_config));
     ESP_ERROR_CHECK(
         smonitor_modem_connect(CONFIG_SMONITOR_MODEM_CONNECT_TIMEOUT_MS));
+    const smonitor_client_location_t location = readCachedLocation();
     ESP_ERROR_CHECK(smonitor_client_start(serial.c_str()));
 
     if (!smonitor_client_wait_for_device_config(60000)) {
@@ -131,7 +153,7 @@ void smonitor_app_run(void)
         if (read_result == ESP_OK) {
             const esp_err_t send_result =
                 smonitor_client_send_samples(samples, sample_count,
-                                             battery_percent);
+                                             battery_percent, &location);
             if (send_result != ESP_OK &&
                 send_result != ESP_ERR_INVALID_STATE) {
                 ESP_LOGW(TAG, "Sample send failed: %s",

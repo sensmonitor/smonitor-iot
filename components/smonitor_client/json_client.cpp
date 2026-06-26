@@ -383,7 +383,8 @@ std::string formatJSON(const smonitor_i2c_sample_t *samples,
                        std::size_t sample_count,
                        const DeviceConfig &config,
                        const std::string &device_serial,
-                       int battery_percent)
+                       int battery_percent,
+                       const smonitor_client_location_t &location_value)
 {
     cJSON *data = cJSON_CreateObject();
     cJSON_AddStringToObject(data, "deviceId", device_serial.c_str());
@@ -413,8 +414,12 @@ std::string formatJSON(const smonitor_i2c_sample_t *samples,
 
     cJSON *location = cJSON_CreateObject();
     cJSON_AddItemToObject(data, "location", location);
-    cJSON_AddNumberToObject(location, "latitude", 44.804244);
-    cJSON_AddNumberToObject(location, "longitude", 20.512232);
+    const double latitude =
+        location_value.valid ? location_value.latitude : 0.0;
+    const double longitude =
+        location_value.valid ? location_value.longitude : 0.0;
+    cJSON_AddNumberToObject(location, "latitude", latitude);
+    cJSON_AddNumberToObject(location, "longitude", longitude);
 
     char *raw_json = cJSON_PrintUnformatted(data);
     std::string json = raw_json != nullptr ? raw_json : "{}";

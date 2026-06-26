@@ -17,12 +17,20 @@ typedef enum {
     SMONITOR_CLIENT_STATUS_DISCONNECTED,
 } smonitor_client_status_t;
 
+typedef struct {
+    double latitude;
+    double longitude;
+    bool valid;
+} smonitor_client_location_t;
+
 esp_err_t smonitor_client_start(const char *device_serial);
 bool smonitor_client_wait_for_device_config(int timeout_ms);
 smonitor_client_status_t smonitor_client_status(void);
-esp_err_t smonitor_client_send_samples(const smonitor_i2c_sample_t *samples,
-                                       size_t sample_count,
-                                       int battery_percent);
+esp_err_t smonitor_client_send_samples(
+    const smonitor_i2c_sample_t *samples,
+    size_t sample_count,
+    int battery_percent,
+    const smonitor_client_location_t *location);
 void smonitor_client_process(void);
 
 #ifdef __cplusplus
