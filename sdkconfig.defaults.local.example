@@ -1,0 +1,9 @@
+# Copy this file to sdkconfig.defaults.local and fill in local values.
+# sdkconfig.defaults.local is ignored by Git.
+
+CONFIG_SMONITOR_MODEM_APN=""
+CONFIG_SMONITOR_MODEM_USERNAME=""
+CONFIG_SMONITOR_MODEM_PASSWORD=""
+CONFIG_SMONITOR_MODEM_AUTH_NONE=y
+# CONFIG_SMONITOR_MODEM_AUTH_PAP is not set
+CONFIG_SMONITOR_DEVICE_TOKEN=""
