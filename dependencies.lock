@@ -60,7 +60,7 @@ dependencies:
       type: git
     version: 3c40f3e9c50ed0a49c5b3f520d1621b67259a4d9
   smonitor-modem:
-    component_hash: e45b3bf7ff706ffd12922e224f6a9516a4abca216e0a16f7296ad9726c8c0063
+    component_hash: 6911babee221cf039b051b4d3dde4c7ead0396e01ec72b71d979647b71293fe7
     dependencies:
     - name: idf
       version: '>=5.5,<5.6'
@@ -70,7 +70,7 @@ dependencies:
       git: https://github.com/sensmonitor/smonitor-modem.git
       path: .
       type: git
-    version: d8156c690a74fdbf996885868e494c5a0be7acd0
+    version: ca22b362480c071dc4287c33e8d35fea15283cb4
 direct_dependencies:
 - espressif/esp_websocket_client
 - idf
