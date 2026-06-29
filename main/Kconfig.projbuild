@@ -96,13 +96,6 @@ menu "SensMonitor IoT"
             bool "GPRS"
     endchoice
 
-    config SMONITOR_DEVICE_TOKEN
-        string "SensMonitor device token"
-        default ""
-        help
-            Stored in build configuration for the first release. A later
-            release will provision and store this value in NVS.
-
     config SMONITOR_SAMPLE_INTERVAL_MS
         int "Sample interval in milliseconds"
         default 5000

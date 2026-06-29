@@ -130,8 +130,8 @@ idf.py set-target esp32
 cp sdkconfig.defaults.local.example sdkconfig.defaults.local
 ```
 
-Fill in the APN and device token in `sdkconfig.defaults.local`. The local file
-is ignored by Git and is loaded automatically after the shared
+Fill in the mobile network settings in `sdkconfig.defaults.local`. The local
+file is ignored by Git and is loaded automatically after the shared
 `sdkconfig.defaults`.
 
 ```bash
