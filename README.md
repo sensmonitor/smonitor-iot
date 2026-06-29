@@ -91,7 +91,8 @@ runtime and the sample loop.
 device configuration, JSON sample formatting, digital I/O updates and SNTP
 time synchronization.
 
-`smonitor-modem` owns modem power, SIM7000 AT setup and PPP connectivity.
+`smonitor-iot` owns board pin assignments and modem power sequencing.
+`smonitor-modem` owns SIM7000 AT setup and PPP connectivity.
 
 `smonitor-i2c-reader` owns I2C bus access and sensor decoding.
 

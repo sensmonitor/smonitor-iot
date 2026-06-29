@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "boards/lilygo_t_sim7000g.h"
 #include "device_identity.hpp"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
@@ -108,17 +109,17 @@ void smonitor_app_run(void)
         return;
     }
 
-    const smonitor_modem_config_t modem_config = {
-        .apn = CONFIG_SMONITOR_MODEM_APN,
+    smonitor_modem_config_t modem_config =
+        smonitor_lilygo_t_sim7000g_modem_config();
+    modem_config.apn = CONFIG_SMONITOR_MODEM_APN;
 #if CONFIG_SMONITOR_MODEM_AUTH_PAP
-        .username = CONFIG_SMONITOR_MODEM_USERNAME,
-        .password = CONFIG_SMONITOR_MODEM_PASSWORD,
+    modem_config.username = CONFIG_SMONITOR_MODEM_USERNAME;
+    modem_config.password = CONFIG_SMONITOR_MODEM_PASSWORD;
 #else
-        .username = nullptr,
-        .password = nullptr,
+    modem_config.username = nullptr;
+    modem_config.password = nullptr;
 #endif
-        .network = configuredNetwork(),
-    };
+    modem_config.network = configuredNetwork();
 
     ESP_ERROR_CHECK(smonitor_modem_init(&modem_config));
     ESP_ERROR_CHECK(

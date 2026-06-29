@@ -1,5 +1,57 @@
 menu "SensMonitor IoT"
 
+    choice SMONITOR_BOARD
+        prompt "Hardware board"
+        default SMONITOR_BOARD_LILYGO_T_SIM7000G
+
+        config SMONITOR_BOARD_LILYGO_T_SIM7000G
+            bool "LilyGO T-SIM7000G"
+    endchoice
+
+    menu "Cellular modem hardware"
+
+        config SMONITOR_BOARD_MODEM_UART_TX_PIN
+            int "Modem UART TX GPIO"
+            default 27 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            range 0 39
+
+        config SMONITOR_BOARD_MODEM_UART_RX_PIN
+            int "Modem UART RX GPIO"
+            default 26 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            range 0 39
+
+        config SMONITOR_BOARD_MODEM_UART_RTS_PIN
+            int "Modem UART RTS GPIO (-1 when unused)"
+            default 25 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            range -1 39
+
+        config SMONITOR_BOARD_MODEM_UART_CTS_PIN
+            int "Modem UART CTS GPIO (-1 when unused)"
+            default 23 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            range -1 39
+
+        config SMONITOR_BOARD_MODEM_PWRKEY_PIN
+            int "Modem PWRKEY GPIO"
+            default 4 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            range 0 39
+
+        config SMONITOR_BOARD_MODEM_UART_BAUD_RATE
+            int "Modem UART baud rate"
+            default 9600 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            range 1200 921600
+
+        config SMONITOR_BOARD_MODEM_UART_RX_BUFFER_SIZE
+            int "Modem UART RX buffer size"
+            default 4096
+            range 1024 16384
+
+        config SMONITOR_BOARD_MODEM_UART_TX_BUFFER_SIZE
+            int "Modem UART TX buffer size"
+            default 2048
+            range 512 8192
+
+    endmenu
+
     config SMONITOR_MODEM_APN
         string "Mobile network APN"
         default ""
@@ -81,12 +133,12 @@ menu "SensMonitor IoT"
 
         config SMONITOR_I2C_SDA_PIN
             int "I2C SDA GPIO"
-            default 21
+            default 21 if SMONITOR_BOARD_LILYGO_T_SIM7000G
             range 0 39
 
         config SMONITOR_I2C_SCL_PIN
             int "I2C SCL GPIO"
-            default 22
+            default 22 if SMONITOR_BOARD_LILYGO_T_SIM7000G
             range 0 39
 
         config SMONITOR_I2C_FREQUENCY_HZ
