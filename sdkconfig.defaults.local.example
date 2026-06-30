@@ -2,3 +2,9 @@
 # sdkconfig.defaults.local is ignored by Git.
 
 CONFIG_SMONITOR_MODEM_APN=""
+
+# Select board
+CONFIG_SMONITOR_BOARD_LILYGO_T_SIM7000G=y
+
+# Select I2C sensor
+CONFIG_SMONITOR_I2C_SENSOR_BME280=y
