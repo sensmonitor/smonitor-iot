@@ -121,7 +121,7 @@ menu "SensMonitor IoT"
 
         config SMONITOR_I2C_PORT
             int "I2C controller"
-            default 0
+            default 0 if SMONITOR_BOARD_LILYGO_T_SIM7000G
             range 0 1
 
         config SMONITOR_I2C_SDA_PIN
@@ -141,7 +141,7 @@ menu "SensMonitor IoT"
 
         config SMONITOR_I2C_INTERNAL_PULLUPS
             bool "Enable ESP32 internal pull-ups"
-            default y
+            default y if SMONITOR_BOARD_LILYGO_T_SIM7000G
             help
                 Internal pull-ups are useful during development but external
                 pull-up resistors are recommended for reliable hardware.
