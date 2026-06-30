@@ -80,7 +80,7 @@ smonitor-iot/
       Kconfig
 
   examples/
-    lilygo_sim7000g_bme280/
+    lilygo_sim7000g/
       sdkconfig.defaults
 ```
 
@@ -237,12 +237,12 @@ The default WebSocket URI points to the production SensMonitor endpoint.
 An example profile is provided in:
 
 ```text
-examples/lilygo_sim7000g_bme280/sdkconfig.defaults
+examples/lilygo_sim7000g/sdkconfig.defaults
 ```
 
-It describes the LilyGO T-SIM7000G + BME280 hardware profile. APN, username
-and password remain empty so public builds do not accidentally ship operator
-credentials.
+It describes the LilyGO T-SIM7000G board profile: modem UART pins, modem
+power pin, I2C bus wiring and battery measurement wiring. APN, sensor choice
+and mobile network settings remain outside this board profile.
 
 To use it manually, copy or merge the relevant values into your local
 `sdkconfig` or use it as a reference when running `idf.py menuconfig`.
