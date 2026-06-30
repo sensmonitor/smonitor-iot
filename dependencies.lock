@@ -48,7 +48,7 @@ dependencies:
       type: idf
     version: 5.5.4
   smonitor-i2c-reader:
-    component_hash: e99563abc00dbda4968c0af2064b53aca98010b002a6c35a0f856a308e1ff62d
+    component_hash: b2f4ff6fa01191269f2d654e61ab42f0eaff729f6ab4e8816aeb489e28050019
     dependencies:
     - name: idf
       version: '>=5.3'
@@ -58,7 +58,7 @@ dependencies:
       git: https://github.com/sensmonitor/smonitor-i2c-reader.git
       path: .
       type: git
-    version: 3c40f3e9c50ed0a49c5b3f520d1621b67259a4d9
+    version: 6e25b0d732b9e429c3fa47ee8802b2d671b9db6c
   smonitor-modem:
     component_hash: 6911babee221cf039b051b4d3dde4c7ead0396e01ec72b71d979647b71293fe7
     dependencies:
