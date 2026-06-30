@@ -106,18 +106,7 @@ menu "SensMonitor IoT"
         default 180000
         range 10000 600000
 
-    menu "I2C sensor"
-
-        choice SMONITOR_I2C_SENSOR
-            prompt "Sensor model"
-            default SMONITOR_I2C_SENSOR_BME280
-
-            config SMONITOR_I2C_SENSOR_BME280
-                bool "BME280"
-                help
-                    Bosch temperature, pressure and humidity sensor using the
-                    built-in bosch_bme280 smonitor-i2c-reader driver.
-        endchoice
+    menu "I2C bus"
 
         config SMONITOR_I2C_PORT
             int "I2C controller"
@@ -145,11 +134,6 @@ menu "SensMonitor IoT"
             help
                 Internal pull-ups are useful during development but external
                 pull-up resistors are recommended for reliable hardware.
-
-        config SMONITOR_I2C_DEVICE_ADDRESS
-            hex "Sensor I2C address"
-            default 0x76
-            range 0x08 0x77
 
     endmenu
 
