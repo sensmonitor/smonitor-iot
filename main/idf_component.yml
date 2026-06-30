@@ -2,7 +2,7 @@ dependencies:
   idf: ">=5.5,<5.6"
   smonitor-modem:
     git: https://github.com/sensmonitor/smonitor-modem.git
-    version: main
+    version: b8187d31b9643794b92e64adf1beeb075554a463
   smonitor-i2c-reader:
     git: https://github.com/sensmonitor/smonitor-i2c-reader.git
     version: 113d7a75f097673cee7e9e7d3216e9f8c720df4e
