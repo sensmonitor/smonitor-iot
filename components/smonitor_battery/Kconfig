@@ -2,7 +2,7 @@ menu "SensMonitor battery"
 
     config SMONITOR_BATTERY_ADC_GPIO
         int "Battery ADC GPIO"
-        default 35
+        default 35 if SMONITOR_BOARD_LILYGO_T_SIM7000G
         range 0 39
         help
             ESP32 GPIO connected to the battery voltage divider. The LilyGO
@@ -10,7 +10,7 @@ menu "SensMonitor battery"
 
     config SMONITOR_BATTERY_DIVIDER_RATIO_MILLI
         int "Battery divider ratio x1000"
-        default 2000
+        default 2000 if SMONITOR_BOARD_LILYGO_T_SIM7000G
         range 1000 10000
         help
             Voltage divider multiplier in milli-units. Use 2000 for a 2.0x
