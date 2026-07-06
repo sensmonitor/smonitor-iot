@@ -1,19 +1,26 @@
-# SensMonitor IoT Client
-Web App: https://app.sensmonitor.com/
+# SensMonitor IoT — ESP32 Cellular Firmware
 
-Public ESP32 firmware for SensMonitor devices.
+Open-source ESP-IDF firmware for ESP32 cellular IoT devices. The first
+hardware-tested profile supports the LilyGO T-SIM7000G with a SIM7000 modem,
+PPPoS connectivity over UART, NB-IoT/LTE-M/GPRS, GNSS, BME280 and secure
+WebSocket telemetry.
 
-This repository contains the final user-facing ESP-IDF project. It boots an
-ESP32 board, connects a cellular modem over PPP, reads the configured I2C
-sensor, requests device configuration from SensMonitor, and sends samples to
-the SensMonitor WebSocket endpoint.
+The firmware boots the board, connects the cellular modem over PPP, reads the
+configured I2C sensor, requests device configuration from SensMonitor and
+sends samples to the SensMonitor WebSocket endpoint.
 
-The first supported hardware profile is:
+[SensMonitor Web App](https://app.sensmonitor.com/) |
+[LilyGO T-SIM7000G integration guide](https://sensmonitor.com/lilygo-iot-integrations/lilygo-t-sim7000g/)
 
-- ESP32 target (LilyGO T-SIM7000G board example)
-- Cellular modem (SIM7000 modem over UART example)
-- I2C sensor (BME280 example)
-- ESP-IDF 5.5.4
+## Hardware Support
+
+| Board | Modem | Connection | Sensor | Status |
+| --- | --- | --- | --- | --- |
+| LilyGO T-SIM7000G | SIM7000G | UART/PPPoS | BME280 | Hardware-tested |
+
+The tested build uses ESP-IDF 5.5.4. Additional board and modem profiles are
+planned; they are not considered supported until their complete PPP and
+telemetry flow has been verified on physical hardware.
 
 ## What This Firmware Does
 
@@ -52,9 +59,9 @@ automatically:
 They are declared in `main/idf_component.yml` and installed under
 `managed_components/`. Users do not need sibling repository checkouts.
 
-The current manifests follow the `main` branches, while `dependencies.lock`
-records the exact resolved commits. Tagged releases should replace branch
-references when the first stable component versions are published.
+The manifests pin exact component commits, and `dependencies.lock` records the
+complete resolved dependency graph. Tagged component versions will replace
+commit pins for stable releases.
 
 ## Repository Layout
 
@@ -358,3 +365,7 @@ SM-ESP32-A1B2C3D4E5F6
   through `sdkconfig`.
 - The SensMonitor client is currently built from source inside this repo. It
   can later be distributed as a precompiled component if needed.
+
+## License
+
+Licensed under the [Apache License 2.0](LICENSE).

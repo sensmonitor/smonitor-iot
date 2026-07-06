@@ -48,7 +48,7 @@ dependencies:
       type: idf
     version: 5.5.4
   smonitor-i2c:
-    component_hash: fa18e6713a14e9d6ef6538356ab5cc09cd39f33e90a256e621990b94196609ca
+    component_hash: 3c917f598cd04247fb7bc4bd986daec5b29fae1cf835a55c00fb1ee1b66504ea
     dependencies:
     - name: idf
       version: '>=5.3'
@@ -58,9 +58,9 @@ dependencies:
       git: https://github.com/sensmonitor/smonitor-i2c.git
       path: .
       type: git
-    version: 151b511b5de1e80ea42da23de037c88a3fa3b30b
+    version: d5d306603b2ddb3240b2a6bae7fcbcbc7b00beac
   smonitor-modem:
-    component_hash: a9c52c6ff31094e1389bc1288d544daec793ce41ad86ad3c58523ec608c5cf3e
+    component_hash: eb8f873fbe29eab31d1f194279aa5e3035ff535c32657b87dcd89f5cbee372cc
     dependencies:
     - name: idf
       version: '>=5.5,<5.6'
@@ -70,12 +70,12 @@ dependencies:
       git: https://github.com/sensmonitor/smonitor-modem.git
       path: .
       type: git
-    version: b8187d31b9643794b92e64adf1beeb075554a463
+    version: 8da43824e944f9e65a1d5c0ad0abd1d8fa69352f
 direct_dependencies:
 - espressif/esp_websocket_client
 - idf
 - smonitor-i2c
 - smonitor-modem
-manifest_hash: ac180dd0941b80fb4686142ba61af047b7afa691a1cfc0a48890c611a0668bc7
+manifest_hash: 249dc7c276041c48c0d361c45466590cb8cfb339cacea6e354231e96ff06701b
 target: esp32
 version: 2.0.0
