@@ -63,54 +63,17 @@ The manifests pin exact component commits, and `dependencies.lock` records the
 complete resolved dependency graph. Tagged component versions will replace
 commit pins for stable releases.
 
-## Repository Layout
-
-Current project layout:
-
-```text
-smonitor-iot/
-  main/
-    app_main.cpp
-    app_controller.cpp
-    device_identity.cpp
-    sensor_runtime.cpp
-    Kconfig.projbuild
-
-  components/
-    smonitor_client/
-      include/smonitor_client.h
-      websocket_client.cpp
-      json_client.cpp
-      device_config.cpp
-      gpio_control.cpp
-      time_sync.cpp
-      Kconfig
-
-  examples/
-    lilygo_sim7000g/
-      sdkconfig.defaults
-```
-
-`main` owns the application flow: device identity, modem startup, sensor
-runtime and the sample loop.
-
-`components/smonitor_client` owns the SensMonitor protocol: TLS WebSocket,
-device configuration, JSON sample formatting, digital I/O updates and SNTP
-time synchronization.
-
-`smonitor-iot` owns board pin assignments and modem power sequencing.
-`smonitor-modem` owns SIM7000 AT setup and PPP connectivity.
-
-`smonitor-i2c` owns I2C bus access and sensor decoding.
-
 ## Requirements
 
-- ESP-IDF 5.5.4
-- ESP32 target
+- Microsoft Visual Studio Code with the Espressif IDF extension, or a command
+  line ESP-IDF 5.5.4 installation
+- Git
 - LilyGO T-SIM7000G board
 - SIM card with data enabled
 - APN for the mobile operator
+- LTE antenna connected before powering the modem
 - BME280 connected over I2C
+- USB data cable
 
 The default LilyGO/BME280 wiring used by this project is:
 
@@ -126,7 +89,98 @@ The default LilyGO/BME280 wiring used by this project is:
 
 The default BME280 address is `0x76`.
 
-## Build
+## Quick Start With Visual Studio Code
+
+Visual Studio Code with the official Espressif IDF extension is the
+recommended setup for the first build.
+
+### 1. Install ESP-IDF
+
+1. Install [Microsoft Visual Studio Code](https://code.visualstudio.com/).
+2. Open **Extensions** with `Ctrl+Shift+X`.
+3. Search for and install the official **Espressif IDF** extension.
+4. Open the Command Palette with `Ctrl+Shift+P`.
+5. Run `ESP-IDF: Open ESP-IDF Installation Manager`.
+6. Install ESP-IDF 5.5.4 and its tools.
+7. Run `ESP-IDF: Select Current ESP-IDF Version` and select the installed
+   ESP-IDF 5.5.4 setup.
+
+Use `ESP-IDF: Doctor Command` if the extension reports a tool or environment
+problem. See the official
+[ESP-IDF extension installation guide](https://docs.espressif.com/projects/vscode-esp-idf-extension/en/latest/installation.html)
+for platform-specific setup details.
+
+### 2. Clone And Open The Project
+
+Clone the repository:
+
+```bash
+git clone https://github.com/sensmonitor/smonitor-iot.git
+cd smonitor-iot
+```
+
+In Visual Studio Code, select **File > Open Folder** and open the cloned
+`smonitor-iot` directory. The extension detects this repository as a standard
+ESP-IDF project.
+
+### 3. Select The Target And Serial Port
+
+Open the Command Palette and run:
+
+```text
+ESP-IDF: Set Espressif Device Target
+```
+
+Select `esp32`. Then run:
+
+```text
+ESP-IDF: Select Port to Use
+```
+
+Select the serial port for the board, such as `COM5` on Windows or
+`/dev/ttyUSB0` on Linux. The exact port depends on the host and board
+revision.
+
+### 4. Configure The Firmware
+
+Copy the local configuration template:
+
+```bash
+cp sdkconfig.defaults.local.example sdkconfig.defaults.local
+```
+
+On Windows PowerShell, use:
+
+```powershell
+Copy-Item sdkconfig.defaults.local.example sdkconfig.defaults.local
+```
+
+The local file is ignored by Git. Enter the APN and other operator-specific
+settings there, then run:
+
+```text
+ESP-IDF: SDK Configuration Editor
+```
+
+Review the options under **SensMonitor IoT**, especially the APN, PPP
+authentication, preferred mobile network and LPWA band. Do not commit mobile
+operator credentials.
+
+### 5. Build, Flash And Monitor
+
+Run these commands from the Command Palette in order:
+
+```text
+ESP-IDF: Build your Project
+ESP-IDF: Flash your Project
+ESP-IDF: Monitor your Device
+```
+
+The first build requires internet access so ESP-IDF Component Manager can
+download the pinned dependencies. A successful boot follows the sequence
+shown in [Expected Log Flow](#expected-log-flow).
+
+## Command-Line Build
 
 Activate ESP-IDF 5.5.4, then build. Internet access is required during the
 first build so Component Manager can download dependencies:
@@ -356,6 +410,41 @@ serial in the SensMonitor application:
 ```text
 SM-ESP32-A1B2C3D4E5F6
 ```
+
+## Repository Layout
+
+```text
+smonitor-iot/
+  main/
+    app_main.cpp
+    app_controller.cpp
+    device_identity.cpp
+    sensor_runtime.cpp
+    Kconfig.projbuild
+
+  components/
+    smonitor_client/
+      include/smonitor_client.h
+      websocket_client.cpp
+      json_client.cpp
+      device_config.cpp
+      gpio_control.cpp
+      time_sync.cpp
+      Kconfig
+
+  examples/
+    lilygo_sim7000g/
+      sdkconfig.defaults
+```
+
+`main` owns the application flow, board pin assignments and modem power
+sequencing. `components/smonitor_client` owns the SensMonitor TLS WebSocket
+protocol, device configuration, JSON sample formatting, digital I/O updates
+and SNTP synchronization.
+
+The external `smonitor-modem` component owns SIM7000 AT setup and PPP
+connectivity. The external `smonitor-i2c` component owns I2C bus access,
+sensor profiles and decoding.
 
 ## Current Limitations
 
