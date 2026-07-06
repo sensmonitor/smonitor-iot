@@ -7,7 +7,7 @@ idf_component_register(
         "time_sync.cpp"
     INCLUDE_DIRS "include"
     PRIV_INCLUDE_DIRS "."
-    REQUIRES smonitor-i2c-reader
+    REQUIRES smonitor-i2c
     PRIV_REQUIRES esp_event esp_websocket_client json driver lwip
     EMBED_TXTFILES "isrgrootx1.pem"
 )

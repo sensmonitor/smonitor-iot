@@ -3,6 +3,6 @@ dependencies:
   smonitor-modem:
     git: https://github.com/sensmonitor/smonitor-modem.git
     version: b8187d31b9643794b92e64adf1beeb075554a463
-  smonitor-i2c-reader:
-    git: https://github.com/sensmonitor/smonitor-i2c-reader.git
-    version: 113d7a75f097673cee7e9e7d3216e9f8c720df4e
+  smonitor-i2c:
+    git: https://github.com/sensmonitor/smonitor-i2c.git
+    version: 151b511b5de1e80ea42da23de037c88a3fa3b30b

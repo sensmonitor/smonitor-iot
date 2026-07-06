@@ -47,7 +47,7 @@ ESP-IDF Component Manager downloads these public Git dependencies
 automatically:
 
 - `https://github.com/sensmonitor/smonitor-modem`
-- `https://github.com/sensmonitor/smonitor-i2c-reader`
+- `https://github.com/sensmonitor/smonitor-i2c`
 
 They are declared in `main/idf_component.yml` and installed under
 `managed_components/`. Users do not need sibling repository checkouts.
@@ -94,7 +94,7 @@ time synchronization.
 `smonitor-iot` owns board pin assignments and modem power sequencing.
 `smonitor-modem` owns SIM7000 AT setup and PPP connectivity.
 
-`smonitor-i2c-reader` owns I2C bus access and sensor decoding.
+`smonitor-i2c` owns I2C bus access and sensor decoding.
 
 ## Requirements
 
