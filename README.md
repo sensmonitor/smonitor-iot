@@ -12,7 +12,8 @@ configured I2C sensor, requests device configuration from SensMonitor and
 sends samples to the SensMonitor WebSocket endpoint.
 
 [SensMonitor Web App](https://app.sensmonitor.com/) |
-[LilyGO T-SIM7000G integration guide](https://sensmonitor.com/lilygo-iot-integrations/lilygo-t-sim7000g/)
+[LilyGO T-SIM7000G integration guide](https://sensmonitor.com/lilygo-iot-integrations/lilygo-t-sim7000g/) |
+[Roadmap](ROADMAP.md)
 
 ## Hardware Support
 
