@@ -1,5 +1,7 @@
 # SensMonitor IoT — ESP32 Cellular Firmware
 
+[![ESP-IDF](https://github.com/sensmonitor/smonitor-iot/actions/workflows/esp-idf.yml/badge.svg)](https://github.com/sensmonitor/smonitor-iot/actions/workflows/esp-idf.yml)
+
 Open-source ESP-IDF firmware for ESP32 cellular IoT devices. The first
 hardware-tested profile supports the LilyGO T-SIM7000G with a SIM7000 modem,
 PPPoS connectivity over UART, NB-IoT/LTE-M/GPRS, GNSS, BME280 and secure
