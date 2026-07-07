@@ -22,7 +22,11 @@ esp_err_t smonitor_sensor_init(void)
     config.sda_pin = CONFIG_SMONITOR_I2C_SDA_PIN;
     config.scl_pin = CONFIG_SMONITOR_I2C_SCL_PIN;
     config.frequency_hz = CONFIG_SMONITOR_I2C_FREQUENCY_HZ;
-    config.internal_pullups = CONFIG_SMONITOR_I2C_INTERNAL_PULLUPS;
+#if CONFIG_SMONITOR_I2C_INTERNAL_PULLUPS
+    config.internal_pullups = true;
+#else
+    config.internal_pullups = false;
+#endif
     config.device_address = CONFIG_SMONITOR_I2C_DEVICE_ADDRESS;
 
     ESP_LOGI(TAG,

@@ -6,6 +6,12 @@ menu "SensMonitor IoT"
 
         config SMONITOR_BOARD_LILYGO_T_SIM7000G
             bool "LilyGO T-SIM7000G"
+
+        config SMONITOR_BOARD_GENERIC_ESP32_UART
+            bool "Generic ESP32 with UART modem"
+            help
+                Configurable ESP32 board profile for an external SIM7000
+                connected over UART. This profile is build-tested only.
     endchoice
 
     menu "Cellular modem hardware"
@@ -13,31 +19,68 @@ menu "SensMonitor IoT"
         config SMONITOR_BOARD_MODEM_UART_TX_PIN
             int "Modem UART TX GPIO"
             default 27 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            default 17 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 0 39
 
         config SMONITOR_BOARD_MODEM_UART_RX_PIN
             int "Modem UART RX GPIO"
             default 26 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            default 16 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 0 39
 
         config SMONITOR_BOARD_MODEM_UART_RTS_PIN
             int "Modem UART RTS GPIO (-1 when unused)"
             default 25 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            default -1 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range -1 39
 
         config SMONITOR_BOARD_MODEM_UART_CTS_PIN
             int "Modem UART CTS GPIO (-1 when unused)"
             default 23 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            default -1 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range -1 39
 
-        config SMONITOR_BOARD_MODEM_PWRKEY_PIN
-            int "Modem PWRKEY GPIO"
-            default 4 if SMONITOR_BOARD_LILYGO_T_SIM7000G
-            range 0 39
+        choice SMONITOR_BOARD_MODEM_POWER
+            prompt "Modem power control"
+            default SMONITOR_BOARD_MODEM_POWER_GPIO if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            default SMONITOR_BOARD_MODEM_POWER_EXTERNAL
+
+            config SMONITOR_BOARD_MODEM_POWER_GPIO
+                bool "GPIO PWRKEY"
+
+            config SMONITOR_BOARD_MODEM_POWER_EXTERNAL
+                bool "Externally powered / already on"
+                depends on SMONITOR_BOARD_GENERIC_ESP32_UART
+        endchoice
+
+        if SMONITOR_BOARD_MODEM_POWER_GPIO
+
+            config SMONITOR_BOARD_MODEM_PWRKEY_PIN
+                int "Modem PWRKEY GPIO"
+                default 4
+                range 0 39
+
+            config SMONITOR_BOARD_MODEM_PWRKEY_ACTIVE_LEVEL
+                int "PWRKEY active level"
+                default 1
+                range 0 1
+
+            config SMONITOR_BOARD_MODEM_PWRKEY_PULSE_MS
+                int "PWRKEY pulse duration in milliseconds"
+                default 1000
+                range 100 10000
+
+            config SMONITOR_BOARD_MODEM_STARTUP_DELAY_MS
+                int "Delay after PWRKEY pulse in milliseconds"
+                default 2000
+                range 0 30000
+
+        endif
 
         config SMONITOR_BOARD_MODEM_UART_BAUD_RATE
             int "Modem UART baud rate"
             default 9600 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            default 9600 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 1200 921600
 
         config SMONITOR_BOARD_MODEM_UART_RX_BUFFER_SIZE
@@ -111,16 +154,19 @@ menu "SensMonitor IoT"
         config SMONITOR_I2C_PORT
             int "I2C controller"
             default 0 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            default 0 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 0 1
 
         config SMONITOR_I2C_SDA_PIN
             int "I2C SDA GPIO"
             default 21 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            default 21 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 0 39
 
         config SMONITOR_I2C_SCL_PIN
             int "I2C SCL GPIO"
             default 22 if SMONITOR_BOARD_LILYGO_T_SIM7000G
+            default 22 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 0 39
 
         config SMONITOR_I2C_FREQUENCY_HZ

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "boards/lilygo_t_sim7000g.h"
+#include "boards/board_profile.h"
 #include "device_identity.hpp"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
@@ -46,6 +46,7 @@ void logSamples(const smonitor_i2c_sample_t *samples, std::size_t sample_count)
 
 void updateBatteryIfDue(int &battery_percent, TickType_t &next_battery_read_time)
 {
+#if CONFIG_SMONITOR_BATTERY_ENABLE
     if (CONFIG_SMONITOR_BATTERY_READ_INTERVAL_SECONDS == 0) {
         return;
     }
@@ -69,6 +70,10 @@ void updateBatteryIfDue(int &battery_percent, TickType_t &next_battery_read_time
     next_battery_read_time =
         now + pdMS_TO_TICKS(CONFIG_SMONITOR_BATTERY_READ_INTERVAL_SECONDS *
                             1000);
+#else
+    (void)battery_percent;
+    (void)next_battery_read_time;
+#endif
 }
 
 smonitor_client_location_t readCachedLocation()
@@ -101,7 +106,9 @@ void smonitor_app_run(void)
     ESP_LOGI(TAG, "Device serial: %s", serial.c_str());
 
     ESP_ERROR_CHECK(smonitor_sensor_init());
+#if CONFIG_SMONITOR_BATTERY_ENABLE
     ESP_ERROR_CHECK(smonitor_battery_init());
+#endif
 
     if (CONFIG_SMONITOR_MODEM_APN[0] == '\0') {
         ESP_LOGE(TAG,
@@ -109,8 +116,7 @@ void smonitor_app_run(void)
         return;
     }
 
-    smonitor_modem_config_t modem_config =
-        smonitor_lilygo_t_sim7000g_modem_config();
+    smonitor_modem_config_t modem_config = smonitor_board_modem_config();
     modem_config.apn = CONFIG_SMONITOR_MODEM_APN;
 #if CONFIG_SMONITOR_MODEM_AUTH_PAP
     modem_config.username = CONFIG_SMONITOR_MODEM_USERNAME;

@@ -17,10 +17,15 @@ sends samples to the SensMonitor WebSocket endpoint.
 | Board | Modem | Connection | Sensor | Status |
 | --- | --- | --- | --- | --- |
 | LilyGO T-SIM7000G | SIM7000G | UART/PPPoS | BME280 | Hardware-tested |
+| Generic ESP32 + UART | SIM7000 | UART/PPPoS | Configurable I2C | Build-tested |
 
 The tested build uses ESP-IDF 5.5.4. Additional board and modem profiles are
 planned; they are not considered supported until their complete PPP and
 telemetry flow has been verified on physical hardware.
+
+The generic profile exposes UART, optional PWRKEY and I2C wiring through
+Kconfig. It is a configurable integration starting point, not a claim that
+every ESP32/SIM7000 board combination has been physically verified.
 
 ## What This Firmware Does
 
@@ -295,15 +300,30 @@ The default WebSocket URI points to the production SensMonitor endpoint.
 
 ## Example Profile
 
-An example profile is provided in:
+Board profile examples are provided in:
 
 ```text
 examples/lilygo_sim7000g/sdkconfig.defaults
+examples/generic_esp32_sim7000/sdkconfig.defaults
 ```
 
-It describes the LilyGO T-SIM7000G board profile: modem UART pins, modem
-power pin, I2C bus wiring and battery measurement wiring. APN, sensor choice
-and mobile network settings remain outside this board profile.
+The LilyGO profile defines its tested modem UART, PWRKEY, I2C and battery
+wiring. The generic profile defaults to UART GPIO17/GPIO16, no hardware flow
+control, an externally powered modem, disabled battery monitoring and
+disabled LilyGO-specific active GPS antenna power.
+
+To use GPIO PWRKEY control with the generic profile, select:
+
+```text
+SensMonitor IoT > Cellular modem hardware > Modem power control > GPIO PWRKEY
+```
+
+Then configure the PWRKEY GPIO, active level, pulse duration and startup
+delay for the exact modem board. Verify all generic pin and power settings
+against the target board schematic before powering the hardware.
+
+APN, sensor choice and mobile network settings remain outside the board
+profiles.
 
 To use it manually, copy or merge the relevant values into your local
 `sdkconfig` or use it as a reference when running `idf.py menuconfig`.
@@ -433,6 +453,8 @@ smonitor-iot/
       Kconfig
 
   examples/
+    generic_esp32_sim7000/
+      sdkconfig.defaults
     lilygo_sim7000g/
       sdkconfig.defaults
 ```
@@ -449,7 +471,8 @@ sensor profiles and decoding.
 ## Current Limitations
 
 - BME280 is the only configured sensor profile.
-- LilyGO T-SIM7000G/SIM7000 is the first supported modem board profile.
+- LilyGO T-SIM7000G/SIM7000 is the only hardware-tested modem board profile.
+- The generic ESP32/UART SIM7000 profile is build-tested only.
 - Runtime provisioning is not yet stored in NVS; configuration is build-time
   through `sdkconfig`.
 - The SensMonitor client is currently built from source inside this repo. It

@@ -1,5 +1,12 @@
 menu "SensMonitor battery"
 
+    config SMONITOR_BATTERY_ENABLE
+        bool "Enable battery ADC monitoring"
+        default y if SMONITOR_BOARD_LILYGO_T_SIM7000G
+        default n
+
+    if SMONITOR_BATTERY_ENABLE
+
     config SMONITOR_BATTERY_ADC_GPIO
         int "Battery ADC GPIO"
         default 35 if SMONITOR_BOARD_LILYGO_T_SIM7000G
@@ -30,5 +37,7 @@ menu "SensMonitor battery"
         help
             Period for reading battery voltage. A value of 0 disables periodic
             reads and keeps the fallback value.
+
+    endif
 
 endmenu

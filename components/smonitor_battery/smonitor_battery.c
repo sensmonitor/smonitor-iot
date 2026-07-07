@@ -11,6 +11,8 @@
 
 static const char *TAG = "smonitor_battery";
 
+#if CONFIG_SMONITOR_BATTERY_ENABLE
+
 static adc_oneshot_unit_handle_t adc_handle;
 static adc_cali_handle_t cali_handle;
 static adc_unit_t adc_unit;
@@ -152,3 +154,20 @@ esp_err_t smonitor_battery_read(smonitor_battery_status_t *status)
              status->raw);
     return ESP_OK;
 }
+
+#else
+
+esp_err_t smonitor_battery_init(void)
+{
+    return ESP_OK;
+}
+
+esp_err_t smonitor_battery_read(smonitor_battery_status_t *status)
+{
+    ESP_RETURN_ON_FALSE(status != NULL, ESP_ERR_INVALID_ARG, TAG,
+                        "Battery status output is required");
+    memset(status, 0, sizeof(*status));
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
+#endif
