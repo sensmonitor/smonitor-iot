@@ -39,10 +39,13 @@ README and verified through CI and, where relevant, physical hardware tests.
 These modem families are candidates for future support. They are not currently
 release-supported:
 
-- SIM7600
 - SIM7080 / SIM7070
+- SIM7600
 - A7670
 - Quectel BG95 / BG96
+
+The order reflects current implementation interest, not a guaranteed release
+schedule.
 
 New modem profiles should not be marked as supported until PPP connectivity,
 basic network registration and telemetry flow are verified.
