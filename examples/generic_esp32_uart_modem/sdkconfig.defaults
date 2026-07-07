@@ -1,7 +1,10 @@
-# Generic ESP32 + UART SIM7000 board profile
+# Generic ESP32 + UART modem board profile
+# These are example wiring values, not universal ESP32 defaults.
+# Change them for your board in idf.py menuconfig.
 CONFIG_SMONITOR_BOARD_GENERIC_ESP32_UART=y
 
-# Modem profile
+# Default modem profile for this example.
+# Change this when using another supported modem profile.
 CONFIG_SMONITOR_MODEM_PROFILE_SIM7000=y
 
 # Modem UART wiring; change these pins for the target board

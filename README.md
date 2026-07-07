@@ -304,13 +304,16 @@ Board profile examples are provided in:
 
 ```text
 examples/lilygo_sim7000g/sdkconfig.defaults
-examples/generic_esp32_sim7000/sdkconfig.defaults
+examples/generic_esp32_uart_modem/sdkconfig.defaults
 ```
 
 The LilyGO profile defines its tested modem UART, PWRKEY, I2C and battery
-wiring. The generic profile defaults to UART GPIO17/GPIO16, no hardware flow
-control, an externally powered modem, disabled battery monitoring and
-disabled LilyGO-specific active GPS antenna power.
+wiring. The generic ESP32 UART modem profile uses SIM7000 as its current
+default modem profile, but the folder name describes the reusable board
+architecture: ESP32 plus a cellular modem over UART. It defaults to UART
+GPIO17/GPIO16, no hardware flow control, an externally powered modem,
+disabled battery monitoring and disabled LilyGO-specific active GPS antenna
+power.
 
 To use GPIO PWRKEY control with the generic profile, select:
 
@@ -453,7 +456,7 @@ smonitor-iot/
       Kconfig
 
   examples/
-    generic_esp32_sim7000/
+    generic_esp32_uart_modem/
       sdkconfig.defaults
     lilygo_sim7000g/
       sdkconfig.defaults
