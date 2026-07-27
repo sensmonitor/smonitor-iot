@@ -10,17 +10,17 @@ dependencies:
       type: service
     version: 1.1.1
   espressif/esp_modem:
-    component_hash: 40af7f39c6c8c0c85c98014721fca8d9d2186f18f70645c66b94548192cf1e03
+    component_hash: 71c9f54fc512c60d93ea9763377ceb1d5b575a4616f3f3344440b97e2a38da29
     dependencies:
     - name: idf
       require: private
       version: '>=4.1'
     source:
-      registry_url: https://components.espressif.com/
+      registry_url: https://components.espressif.com
       type: service
-    version: 1.4.2
+    version: 1.4.3
   espressif/esp_websocket_client:
-    component_hash: 3fb288702517ef4d75bf933a115f1056ee0c2540d964f9e1d856e0bb67e1dfeb
+    component_hash: dc00233af846f3a744ada283a300e0d586040aadc3ee67361645ecdce4523672
     dependencies:
     - name: idf
       require: private
@@ -28,7 +28,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 1.7.0
+    version: 1.8.0
   espressif/i2c_bus:
     component_hash: 483112c1619c54c38d0b734fb25f1678733267858a77b7af2f48cc7db6dbbd84
     dependencies:
@@ -40,42 +40,46 @@ dependencies:
       require: private
       version: '>=4.0'
     source:
-      registry_url: https://components.espressif.com/
+      registry_url: https://components.espressif.com
       type: service
     version: 1.5.2
   idf:
     source:
       type: idf
     version: 5.5.4
-  smonitor-i2c:
-    component_hash: 3c917f598cd04247fb7bc4bd986daec5b29fae1cf835a55c00fb1ee1b66504ea
+  sensmonitor/smonitor-i2c:
+    component_hash: 64fb25f5a082f54da8caa29bdff079638247a0cb41dce4b93c54342ce10f458f
     dependencies:
-    - name: idf
-      version: '>=5.3'
     - name: espressif/i2c_bus
+      registry_url: https://components.espressif.com
+      require: private
       version: ^1.2.0
-    source:
-      git: https://github.com/sensmonitor/smonitor-i2c.git
-      path: .
-      type: git
-    version: b8f2779abc70b2b83d4f7729ef274c72bbebf679
-  smonitor-modem:
-    component_hash: eb8f873fbe29eab31d1f194279aa5e3035ff535c32657b87dcd89f5cbee372cc
-    dependencies:
     - name: idf
-      version: '>=5.5,<5.6'
-    - name: espressif/esp_modem
-      version: ^1.4.0
+      require: private
+      version: '>=5.3'
     source:
-      git: https://github.com/sensmonitor/smonitor-modem.git
-      path: .
-      type: git
-    version: 4aef4c5c4138bc4838d0eb2df4c1b9b65f00f41d
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 0.1.1
+  sensmonitor/smonitor-modem:
+    component_hash: 7cdf8f473a40149331f88c39916e491288980e287cbeedffa9809a7dc4b3e666
+    dependencies:
+    - name: espressif/esp_modem
+      registry_url: https://components.espressif.com
+      require: private
+      version: ^1.4.0
+    - name: idf
+      require: private
+      version: '>=5.5,<5.6'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 0.1.1
 direct_dependencies:
 - espressif/esp_websocket_client
 - idf
-- smonitor-i2c
-- smonitor-modem
-manifest_hash: fe64e0b6b046f11db0bc9ff0160d5f1df0671994d05dbcc76b9c35eadef88b7a
+- sensmonitor/smonitor-i2c
+- sensmonitor/smonitor-modem
+manifest_hash: dfc176c61abfa9b5772835a090fda9bbbf79f76556a53630b4edc41eec865256
 target: esp32
 version: 2.0.0
