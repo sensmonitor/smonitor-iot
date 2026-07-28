@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.1.1 - ESP Component Registry dependencies
+
+### Changed
+
+- Switched `smonitor-modem` and `smonitor-i2c` from Git URL dependencies to
+  ESP Component Registry packages.
+- Updated the dependency lock file to resolve `sensmonitor/smonitor-modem`
+  `0.1.1` and `sensmonitor/smonitor-i2c` `0.1.1`.
+
+### Verified
+
+- ESP-IDF 5.5.4 default LilyGO build.
+- ESP-IDF 5.5.4 generic ESP32 UART modem build.
+- Runtime telemetry flow on physical LilyGO T-SIM7000G hardware.
+
+### Notes
+
+- No firmware API or hardware support changes.
+- LilyGO T-SIM7000G remains the only hardware-tested board profile.
+
 ## v0.1.0 - Initial public release
 
 ### Added

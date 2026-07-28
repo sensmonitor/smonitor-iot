@@ -12,8 +12,8 @@ README and verified through CI and, where relevant, physical hardware tests.
 - Generic ESP32 UART modem is a build-tested configurable starting point.
 - SIM7000 is the first supported modem profile.
 - BME280 is the first supported I2C sensor profile.
-- `smonitor-modem` and `smonitor-i2c` are consumed as tagged `v0.1.0`
-  components.
+- `smonitor-modem` and `smonitor-i2c` are consumed as ESP Component Registry
+  packages.
 
 ## v0.1.x maintenance
 

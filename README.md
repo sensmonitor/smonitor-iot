@@ -59,18 +59,19 @@ then restart the device so it requests configuration again.
 
 ## Dependencies
 
-ESP-IDF Component Manager downloads these public Git dependencies
-automatically:
+ESP-IDF Component Manager downloads the SensMonitor components from the ESP
+Component Registry automatically:
 
-- `https://github.com/sensmonitor/smonitor-modem`
-- `https://github.com/sensmonitor/smonitor-i2c`
+- `sensmonitor/smonitor-modem`
+- `sensmonitor/smonitor-i2c`
 
 They are declared in `main/idf_component.yml` and installed under
 `managed_components/`. Users do not need sibling repository checkouts.
 
-The manifests pin exact component commits, and `dependencies.lock` records the
-complete resolved dependency graph. Tagged component versions will replace
-commit pins for stable releases.
+The manifest uses registry component versions, and `dependencies.lock` records
+the complete resolved dependency graph for reproducible builds. Component
+source included in the registry packages is installed locally under
+`managed_components/` during the ESP-IDF build.
 
 ## Requirements
 
