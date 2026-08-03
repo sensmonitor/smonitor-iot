@@ -21,11 +21,16 @@ sends samples to the SensMonitor WebSocket endpoint.
 | Board | Modem | Connection | Sensor | Status |
 | --- | --- | --- | --- | --- |
 | LilyGO T-SIM7000G | SIM7000G | UART/PPPoS | BME280 | Hardware-tested |
+| LilyGO T-SIM7080 S3 | SIM7080G | UART/PPPoS | Configurable I2C | Build-tested |
 | Generic ESP32 + UART | SIM7000 | UART/PPPoS | Configurable I2C | Build-tested |
 
 The tested build uses ESP-IDF 5.5.4. Additional board and modem profiles are
 planned; they are not considered supported until their complete PPP and
 telemetry flow has been verified on physical hardware.
+
+The LilyGO T-SIM7080 S3 profile targets ESP32-S3 with SIM7080G Cat-M/NB-IoT
+data and GNSS. It uses the LilyGO modem UART pins GPIO4/GPIO5, PWRKEY GPIO41
+and PMU I2C pins GPIO15/GPIO7.
 
 The generic profile exposes UART, optional PWRKEY and I2C wiring through
 Kconfig. It is a configurable integration starting point, not a claim that
@@ -72,6 +77,11 @@ The manifest uses registry component versions, and `dependencies.lock` records
 the complete resolved dependency graph for reproducible builds. Component
 source included in the registry packages is installed locally under
 `managed_components/` during the ESP-IDF build.
+
+During local component development, `main/idf_component.yml` may use
+`override_path` to point `sensmonitor/smonitor-modem` at a sibling checkout.
+Do not commit a `dependencies.lock` file that resolves the component to an
+absolute local path.
 
 ## Requirements
 
