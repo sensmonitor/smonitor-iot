@@ -1,5 +1,0 @@
-{
- "idf.currentSetup": "/home/ivan/esp/v5.5/esp-idf",
- "idf.flashType": "UART",
- "idf.port": "/dev/ttyACM0"
-}

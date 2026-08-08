@@ -3,3 +3,5 @@ managed_components/
 sdkconfig
 sdkconfig.old
 sdkconfig.defaults.local
+.clangd
+.vscode/settings.json
