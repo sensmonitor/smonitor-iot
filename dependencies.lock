@@ -62,7 +62,7 @@ dependencies:
       type: service
     version: 0.1.1
   sensmonitor/smonitor-modem:
-    component_hash: 9f88b40a427f786df83c1c5d6b2b0550773894f7d0d8333d15f9cbf1f6812f18
+    component_hash: 0723be63b5f9e89ca31b028d0925ef6ee415ad1e217d77dd114dab2c83650dee
     dependencies:
     - name: espressif/esp_modem
       registry_url: https://components.espressif.com
@@ -74,12 +74,12 @@ dependencies:
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 0.1.4
+    version: 0.1.5
 direct_dependencies:
 - espressif/esp_websocket_client
 - idf
 - sensmonitor/smonitor-i2c
 - sensmonitor/smonitor-modem
-manifest_hash: e893e9208590a226472b8cb20a02d43414c511a9b4cd96eb7dcf790aea55ea4c
+manifest_hash: ce529118f4165e8d4ea28eb2827869f5711015882d6da180485b224cf58fd2d7
 target: esp32s3
 version: 2.0.0
