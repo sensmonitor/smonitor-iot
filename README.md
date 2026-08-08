@@ -261,9 +261,9 @@ Important options:
 | `CONFIG_SMONITOR_MODEM_PASSWORD` | PPP password. Often empty. |
 | `CONFIG_SMONITOR_MODEM_AUTH_NONE` | Disable PPP authentication. Default for LilyGO/SIM7000G profile. |
 | `CONFIG_SMONITOR_MODEM_AUTH_PAP` | Use PAP with the configured username/password. |
-| `CONFIG_SMONITOR_MODEM_NETWORK_NB_IOT` | Prefer NB-IoT. Default for the current profile. |
-| `CONFIG_SMONITOR_MODEM_NETWORK_LTE_M` | Prefer LTE-M. |
-| `CONFIG_SMONITOR_MODEM_NETWORK_AUTO` | Let modem/operator choose automatically. |
+| `CONFIG_SMONITOR_MODEM_NETWORK_AUTO` | Let modem/operator choose automatically. Default for first bring-up. |
+| `CONFIG_SMONITOR_MODEM_NETWORK_NB_IOT` | Prefer NB-IoT when supported by the SIM/operator. |
+| `CONFIG_SMONITOR_MODEM_NETWORK_LTE_M` | Prefer LTE-M when supported by the SIM/operator. |
 | `CONFIG_SMONITOR_MODEM_CONNECT_TIMEOUT_MS` | PPP connection timeout. Default `180000`. |
 
 Example operator configuration:
@@ -273,12 +273,14 @@ CONFIG_SMONITOR_MODEM_APN="your-apn"
 CONFIG_SMONITOR_MODEM_USERNAME=""
 CONFIG_SMONITOR_MODEM_PASSWORD=""
 CONFIG_SMONITOR_MODEM_AUTH_NONE=y
-CONFIG_SMONITOR_MODEM_NETWORK_NB_IOT=y
+CONFIG_SMONITOR_MODEM_NETWORK_AUTO=y
 CONFIG_SMONITOR_MODEM_LPWA_BAND=20
 ```
 
 Use the APN, authentication mode, network technology and radio band supplied
-by your mobile operator. Enable PAP only if the operator requires it.
+by your mobile operator. Keep `AUTO` for initial modem bring-up, then select
+NB-IoT or LTE-M explicitly if the deployment/operator requires it. Enable PAP
+only if the operator requires it.
 
 ### I2C Sensor
 
@@ -414,7 +416,7 @@ For the tested LilyGO/SIM7000G profile use:
 
 ```text
 CONFIG_SMONITOR_MODEM_AUTH_NONE=y
-CONFIG_SMONITOR_MODEM_NETWORK_NB_IOT=y
+CONFIG_SMONITOR_MODEM_NETWORK_AUTO=y
 CONFIG_SMONITOR_MODEM_LPWA_BAND=20
 ```
 

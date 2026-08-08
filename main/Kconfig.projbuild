@@ -141,7 +141,7 @@ menu "SensMonitor IoT"
 
     choice SMONITOR_MODEM_NETWORK
         prompt "Preferred mobile network"
-        default SMONITOR_MODEM_NETWORK_NB_IOT
+        default SMONITOR_MODEM_NETWORK_AUTO
 
         config SMONITOR_MODEM_NETWORK_AUTO
             bool "Automatic"
