@@ -1,4 +1,5 @@
 # LilyGO T-SIM7000G board profile
+CONFIG_IDF_TARGET="esp32"
 CONFIG_SMONITOR_BOARD_LILYGO_T_SIM7000G=y
 
 # Modem profile

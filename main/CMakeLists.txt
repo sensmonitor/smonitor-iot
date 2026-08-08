@@ -3,6 +3,7 @@ idf_component_register(
         "app_main.cpp"
         "app_controller.cpp"
         "boards/board_profile.c"
+        "boards/common/axp2101_power.c"
         "boards/common/modem_gpio_power.c"
         "device_identity.cpp"
         "sensor_runtime.cpp"

@@ -29,8 +29,12 @@ planned; they are not considered supported until their complete PPP and
 telemetry flow has been verified on physical hardware.
 
 The LilyGO T-SIM7080 S3 profile targets ESP32-S3 with SIM7080G Cat-M/NB-IoT
-data and GNSS. It uses the LilyGO modem UART pins GPIO4/GPIO5, PWRKEY GPIO41
-and PMU I2C pins GPIO15/GPIO7.
+data and GNSS. It uses the LilyGO T-SIM7080G-S3 pinout with ESP UART TX/RX
+GPIO5/GPIO4, PWRKEY GPIO41 and external sensor I2C pins GPIO13/GPIO21 when
+the camera interface is not used. The onboard PMU I2C bus uses GPIO15/GPIO7
+internally and those pins are not exposed for external sensors. The
+`*-S3-Standard` variants can use a different default I2C mapping and should
+be handled as separate board profiles after hardware verification.
 
 The generic profile exposes UART, optional PWRKEY and I2C wiring through
 Kconfig. It is a configurable integration starting point, not a claim that
@@ -151,7 +155,9 @@ Open the Command Palette and run:
 ESP-IDF: Set Espressif Device Target
 ```
 
-Select `esp32`. Then run:
+Select the target that matches the board profile. The root/default
+configuration follows current ESP32-S3 development. Use `esp32s3` for
+LilyGO T-SIM7080G-S3 and `esp32` for LilyGO T-SIM7000G WROVER-B. Then run:
 
 ```text
 ESP-IDF: Select Port to Use
@@ -207,13 +213,15 @@ first build so Component Manager can download dependencies:
 
 ```bash
 cd smonitor-iot
-idf.py set-target esp32
+idf.py set-target esp32s3
 cp sdkconfig.defaults.local.example sdkconfig.defaults.local
 ```
 
 Fill in the mobile network settings in `sdkconfig.defaults.local`. The local
 file is ignored by Git and is loaded automatically after the shared
-`sdkconfig.defaults`.
+`sdkconfig.defaults`. For the ESP32-based T-SIM7000G WROVER-B profile, use
+`idf.py set-target esp32` or the example defaults in
+`examples/lilygo_sim7000g/sdkconfig.defaults`.
 
 ```bash
 idf.py build
@@ -319,16 +327,18 @@ Board profile examples are provided in:
 
 ```text
 examples/lilygo_sim7000g/sdkconfig.defaults
+examples/lilygo_sim7080_s3/sdkconfig.defaults
 examples/generic_esp32_uart_modem/sdkconfig.defaults
 ```
 
-The LilyGO profile defines its tested modem UART, PWRKEY, I2C and battery
-wiring. The generic ESP32 UART modem profile uses SIM7000 as its current
-default modem profile, but the folder name describes the reusable board
-architecture: ESP32 plus a cellular modem over UART. It defaults to UART
-GPIO17/GPIO16, no hardware flow control, an externally powered modem,
-disabled battery monitoring and disabled LilyGO-specific active GPS antenna
-power.
+The LilyGO profiles define their tested modem UART, PWRKEY, I2C and power
+wiring. `lilygo_sim7000g` targets the ESP32-based WROVER-B board, while
+`lilygo_sim7080_s3` targets ESP32-S3. The generic ESP32 UART modem profile
+uses SIM7000 as its current default modem profile, but the folder name
+describes the reusable board architecture: ESP32 plus a cellular modem over
+UART. It defaults to UART GPIO17/GPIO16, no hardware flow control, an
+externally powered modem, disabled battery monitoring and disabled
+LilyGO-specific active GPS antenna power.
 
 To use GPIO PWRKEY control with the generic profile, select:
 
@@ -474,6 +484,8 @@ smonitor-iot/
     generic_esp32_uart_modem/
       sdkconfig.defaults
     lilygo_sim7000g/
+      sdkconfig.defaults
+    lilygo_sim7080_s3/
       sdkconfig.defaults
 ```
 
