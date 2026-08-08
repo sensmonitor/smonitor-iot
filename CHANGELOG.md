@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.1.3 - LilyGO T-SIM7080G-S3 support
+
+### Added
+
+- Added LilyGO T-SIM7080G-S3 board support with SIM7080G Cat-M/NB-IoT modem.
+- Added AXP2101 PMU initialization for modem and GNSS antenna power.
+- Added ESP32-S3 target defaults for the current root development profile.
+- Added explicit ESP32 target default for the LilyGO T-SIM7000G example.
+
+### Changed
+
+- Updated `sensmonitor/smonitor-modem` dependency to `0.1.5`.
+- Switched default modem network selection to automatic for first bring-up.
+- Updated T-SIM7080G-S3 UART and external I2C pin defaults.
+- Documented separate ESP32 and ESP32-S3 build target expectations.
+
+### Verified
+
+- ESP-IDF 5.5.4 build with registry dependencies.
+- Runtime telemetry flow on physical LilyGO T-SIM7080G-S3 hardware.
+- Runtime regression check on physical LilyGO T-SIM7000G hardware.
+
+### Notes
+
+- T-SIM7080G-S3 battery telemetry is not implemented yet; firmware currently
+  reports the fallback battery value when battery monitoring is disabled.
+- Use automatic network mode for initial modem bring-up, then select NB-IoT or
+  LTE-M explicitly if required by the SIM/operator/deployment.
+
 ## v0.1.1 - ESP Component Registry dependencies
 
 ### Changed
