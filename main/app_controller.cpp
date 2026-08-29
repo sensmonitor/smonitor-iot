@@ -18,11 +18,14 @@ namespace {
 constexpr const char *TAG = "smonitor_iot";
 constexpr std::size_t kMaxSensorSamples = 16;
 constexpr int kFallbackBatteryPercent = 50;
+constexpr int kModemConnectRetryDelayMs = 30000;
 
 smonitor_modem_network_t configuredNetwork()
 {
 #if CONFIG_SMONITOR_MODEM_NETWORK_LTE_M
     return SMONITOR_MODEM_NETWORK_LTE_M;
+#elif CONFIG_SMONITOR_MODEM_NETWORK_LTE
+    return SMONITOR_MODEM_NETWORK_LTE;
 #elif CONFIG_SMONITOR_MODEM_NETWORK_NB_IOT
     return SMONITOR_MODEM_NETWORK_NB_IOT;
 #elif CONFIG_SMONITOR_MODEM_NETWORK_GPRS
@@ -97,6 +100,27 @@ smonitor_client_location_t readCachedLocation()
     return location;
 }
 
+esp_err_t connectModemWithRetry(uint32_t timeout_ms)
+{
+    while (true) {
+        const esp_err_t result = smonitor_modem_connect(timeout_ms);
+        if (result == ESP_OK) {
+            return ESP_OK;
+        }
+
+        ESP_LOGE(TAG, "Modem connect failed: %s; retrying in %d ms",
+                 esp_err_to_name(result), kModemConnectRetryDelayMs);
+        vTaskDelay(pdMS_TO_TICKS(kModemConnectRetryDelayMs));
+
+        if (smonitor_modem_get_state() != SMONITOR_MODEM_STATE_STARTING) {
+            ESP_LOGE(TAG,
+                     "Modem cannot be retried from state %d without reinitialization",
+                     smonitor_modem_get_state());
+            return result;
+        }
+    }
+}
+
 } // namespace
 
 void smonitor_app_run(void)
@@ -105,7 +129,13 @@ void smonitor_app_run(void)
     ESP_ERROR_CHECK(smonitor_device_serial(serial));
     ESP_LOGI(TAG, "Device serial: %s", serial.c_str());
 
-    ESP_ERROR_CHECK(smonitor_sensor_init());
+    bool sensor_available = true;
+    const esp_err_t sensor_init_result = smonitor_sensor_init();
+    if (sensor_init_result != ESP_OK) {
+        sensor_available = false;
+        ESP_LOGW(TAG, "Sensor init failed: %s; continuing without sensor",
+                 esp_err_to_name(sensor_init_result));
+    }
 #if CONFIG_SMONITOR_BATTERY_ENABLE
     ESP_ERROR_CHECK(smonitor_battery_init());
 #endif
@@ -129,7 +159,7 @@ void smonitor_app_run(void)
 
     ESP_ERROR_CHECK(smonitor_modem_init(&modem_config));
     ESP_ERROR_CHECK(
-        smonitor_modem_connect(CONFIG_SMONITOR_MODEM_CONNECT_TIMEOUT_MS));
+        connectModemWithRetry(CONFIG_SMONITOR_MODEM_CONNECT_TIMEOUT_MS));
     const smonitor_client_location_t location = readCachedLocation();
     ESP_ERROR_CHECK(smonitor_client_start(serial.c_str()));
 
@@ -153,8 +183,11 @@ void smonitor_app_run(void)
 
         smonitor_i2c_sample_t samples[kMaxSensorSamples] = {};
         std::size_t sample_count = 0;
-        const esp_err_t read_result = smonitor_sensor_read(
-            samples, kMaxSensorSamples, &sample_count);
+        esp_err_t read_result = ESP_ERR_INVALID_STATE;
+        if (sensor_available) {
+            read_result = smonitor_sensor_read(
+                samples, kMaxSensorSamples, &sample_count);
+        }
 
         logSamples(samples, sample_count);
         if (read_result == ESP_OK) {

@@ -22,6 +22,7 @@ sends samples to the SensMonitor WebSocket endpoint.
 | --- | --- | --- | --- | --- |
 | LilyGO T-SIM7000G | SIM7000G | UART/PPPoS | BME280 | Hardware-tested |
 | LilyGO T-SIM7080 S3 | SIM7080G | UART/PPPoS | Configurable I2C | Build-tested |
+| LilyGO T-SIM7670G S3 | SIM7670G | UART/PPPoS | Configurable I2C | Build-tested |
 | Generic ESP32 + UART | SIM7000 | UART/PPPoS | Configurable I2C | Build-tested |
 
 The tested build uses ESP-IDF 5.5.4. Additional board and modem profiles are
@@ -35,6 +36,12 @@ the camera interface is not used. The onboard PMU I2C bus uses GPIO15/GPIO7
 internally and those pins are not exposed for external sensors. The
 `*-S3-Standard` variants can use a different default I2C mapping and should
 be handled as separate board profiles after hardware verification.
+
+The LilyGO T-SIM7670G S3 profile targets ESP32-S3 with the SIM7670G LTE Cat-1
+modem and GNSS. It uses the T-SIM7670G-S3 pinout with ESP UART TX/RX
+GPIO11/GPIO10, PWRKEY GPIO18 and DTR GPIO9. External sensor I2C currently
+defaults to GPIO13/GPIO21 to match the T-SIM7080 S3 profile during hardware
+testing.
 
 The generic profile exposes UART, optional PWRKEY and I2C wiring through
 Kconfig. It is a configurable integration starting point, not a claim that
@@ -330,17 +337,18 @@ Board profile examples are provided in:
 ```text
 examples/lilygo_sim7000g/sdkconfig.defaults
 examples/lilygo_sim7080_s3/sdkconfig.defaults
+examples/lilygo_sim7670_s3/sdkconfig.defaults
 examples/generic_esp32_uart_modem/sdkconfig.defaults
 ```
 
 The LilyGO profiles define their tested modem UART, PWRKEY, I2C and power
 wiring. `lilygo_sim7000g` targets the ESP32-based WROVER-B board, while
-`lilygo_sim7080_s3` targets ESP32-S3. The generic ESP32 UART modem profile
-uses SIM7000 as its current default modem profile, but the folder name
-describes the reusable board architecture: ESP32 plus a cellular modem over
-UART. It defaults to UART GPIO17/GPIO16, no hardware flow control, an
-externally powered modem, disabled battery monitoring and disabled
-LilyGO-specific active GPS antenna power.
+`lilygo_sim7080_s3` and `lilygo_sim7670_s3` target ESP32-S3. The generic
+ESP32 UART modem profile uses SIM7000 as its current default modem profile,
+but the folder name describes the reusable board architecture: ESP32 plus a
+cellular modem over UART. It defaults to UART GPIO17/GPIO16, no hardware flow
+control, an externally powered modem, disabled battery monitoring and
+disabled LilyGO-specific active GPS antenna power.
 
 To use GPIO PWRKEY control with the generic profile, select:
 

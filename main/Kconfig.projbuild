@@ -13,6 +13,12 @@ menu "SensMonitor IoT"
                 ESP32-S3 board with SIM7080G Cat-M/NB-IoT modem, onboard PMU,
                 battery holder, solar input and SD card.
 
+        config SMONITOR_BOARD_LILYGO_T_SIM7670_S3
+            bool "LilyGO T-SIM7670G S3"
+            help
+                ESP32-S3 board with SIM7670G LTE Cat-1 modem, GNSS, battery
+                connector and solar charging.
+
         config SMONITOR_BOARD_GENERIC_ESP32_UART
             bool "Generic ESP32 with UART modem"
             help
@@ -26,6 +32,7 @@ menu "SensMonitor IoT"
             int "Modem UART TX GPIO"
             default 27 if SMONITOR_BOARD_LILYGO_T_SIM7000G
             default 5 if SMONITOR_BOARD_LILYGO_T_SIM7080_S3
+            default 4 if SMONITOR_BOARD_LILYGO_T_SIM7670_S3
             default 17 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 0 48
 
@@ -33,6 +40,7 @@ menu "SensMonitor IoT"
             int "Modem UART RX GPIO"
             default 26 if SMONITOR_BOARD_LILYGO_T_SIM7000G
             default 4 if SMONITOR_BOARD_LILYGO_T_SIM7080_S3
+            default 5 if SMONITOR_BOARD_LILYGO_T_SIM7670_S3
             default 16 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 0 48
 
@@ -40,6 +48,7 @@ menu "SensMonitor IoT"
             int "Modem UART RTS GPIO (-1 when unused)"
             default 25 if SMONITOR_BOARD_LILYGO_T_SIM7000G
             default -1 if SMONITOR_BOARD_LILYGO_T_SIM7080_S3
+            default -1 if SMONITOR_BOARD_LILYGO_T_SIM7670_S3
             default -1 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range -1 48
 
@@ -47,6 +56,7 @@ menu "SensMonitor IoT"
             int "Modem UART CTS GPIO (-1 when unused)"
             default 23 if SMONITOR_BOARD_LILYGO_T_SIM7000G
             default -1 if SMONITOR_BOARD_LILYGO_T_SIM7080_S3
+            default -1 if SMONITOR_BOARD_LILYGO_T_SIM7670_S3
             default -1 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range -1 48
 
@@ -54,6 +64,7 @@ menu "SensMonitor IoT"
             prompt "Modem power control"
             default SMONITOR_BOARD_MODEM_POWER_GPIO if SMONITOR_BOARD_LILYGO_T_SIM7000G
             default SMONITOR_BOARD_MODEM_POWER_GPIO if SMONITOR_BOARD_LILYGO_T_SIM7080_S3
+            default SMONITOR_BOARD_MODEM_POWER_GPIO if SMONITOR_BOARD_LILYGO_T_SIM7670_S3
             default SMONITOR_BOARD_MODEM_POWER_EXTERNAL
 
             config SMONITOR_BOARD_MODEM_POWER_GPIO
@@ -70,6 +81,7 @@ menu "SensMonitor IoT"
                 int "Modem PWRKEY GPIO"
                 default 4 if SMONITOR_BOARD_LILYGO_T_SIM7000G
                 default 41 if SMONITOR_BOARD_LILYGO_T_SIM7080_S3
+                default 46 if SMONITOR_BOARD_LILYGO_T_SIM7670_S3
                 default 4
                 range 0 48
 
@@ -94,6 +106,7 @@ menu "SensMonitor IoT"
             int "Modem UART baud rate"
             default 9600 if SMONITOR_BOARD_LILYGO_T_SIM7000G
             default 115200 if SMONITOR_BOARD_LILYGO_T_SIM7080_S3
+            default 115200 if SMONITOR_BOARD_LILYGO_T_SIM7670_S3
             default 9600 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 1200 921600
 
@@ -139,21 +152,6 @@ menu "SensMonitor IoT"
                 Uses the configured PPP username and password.
     endchoice
 
-    choice SMONITOR_MODEM_NETWORK
-        prompt "Preferred mobile network"
-        default SMONITOR_MODEM_NETWORK_AUTO
-
-        config SMONITOR_MODEM_NETWORK_AUTO
-            bool "Automatic"
-        config SMONITOR_MODEM_NETWORK_LTE_M
-            bool "LTE-M"
-        config SMONITOR_MODEM_NETWORK_NB_IOT
-            bool "NB-IoT"
-        config SMONITOR_MODEM_NETWORK_GPRS
-            bool "GPRS"
-            depends on !SMONITOR_MODEM_PROFILE_SIM7080
-    endchoice
-
     config SMONITOR_SAMPLE_INTERVAL_MS
         int "Sample interval in milliseconds"
         default 5000
@@ -170,6 +168,7 @@ menu "SensMonitor IoT"
             int "I2C controller"
             default 0 if SMONITOR_BOARD_LILYGO_T_SIM7000G
             default 0 if SMONITOR_BOARD_LILYGO_T_SIM7080_S3
+            default 0 if SMONITOR_BOARD_LILYGO_T_SIM7670_S3
             default 0 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 0 1
 
@@ -177,6 +176,7 @@ menu "SensMonitor IoT"
             int "I2C SDA GPIO"
             default 21 if SMONITOR_BOARD_LILYGO_T_SIM7000G
             default 13 if SMONITOR_BOARD_LILYGO_T_SIM7080_S3
+            default 13 if SMONITOR_BOARD_LILYGO_T_SIM7670_S3
             default 21 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 0 48
 
@@ -184,6 +184,7 @@ menu "SensMonitor IoT"
             int "I2C SCL GPIO"
             default 22 if SMONITOR_BOARD_LILYGO_T_SIM7000G
             default 21 if SMONITOR_BOARD_LILYGO_T_SIM7080_S3
+            default 21 if SMONITOR_BOARD_LILYGO_T_SIM7670_S3
             default 22 if SMONITOR_BOARD_GENERIC_ESP32_UART
             range 0 48
 
@@ -196,6 +197,7 @@ menu "SensMonitor IoT"
             bool "Enable ESP32 internal pull-ups"
             default y if SMONITOR_BOARD_LILYGO_T_SIM7000G
             default y if SMONITOR_BOARD_LILYGO_T_SIM7080_S3
+            default y if SMONITOR_BOARD_LILYGO_T_SIM7670_S3
             help
                 Internal pull-ups are useful during development but external
                 pull-up resistors are recommended for reliable hardware.
