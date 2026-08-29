@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.1.4 - LilyGO T-SIM7670G-S3 support
+
+### Added
+
+- Added LilyGO T-SIM7670G-S3 board profile with SIM7670 LTE Cat-1 modem
+  defaults.
+- Added ESP32-S3 16 MB flash and Quad PSRAM defaults for the SIM7670 profile.
+
+### Changed
+
+- Updated `sensmonitor/smonitor-modem` dependency to `0.1.6`.
+- Set SIM7670 profile I2C defaults to the board QWIIC pins.
+- Disabled battery monitoring by default for the SIM7670 profile.
+
+### Verified
+
+- ESP-IDF 5.5.4 build with registry dependencies.
+
 ## v0.1.3 - LilyGO T-SIM7080G-S3 support
 
 ### Added
