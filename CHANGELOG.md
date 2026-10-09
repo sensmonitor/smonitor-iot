@@ -2,22 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## v0.1.5 - 2026-10-09
+
+### Added
+
+- Added a custom ESP32-S3 N8R8 UART modem example with 8 MB flash,
+  8 MB Octal PSRAM at 80 MHz, configurable GPIO power control and I2C pins.
+- Included the generic ESP32-S3 UART modem example in the CI build matrix.
 
 ### Changed
 
 - Updated the development and CI ESP-IDF version from 5.5.4 to 5.5.5.
-- Expanded CI to build SIM7000G, generic ESP32 UART modem, SIM7080-S3,
-  and SIM7670-S3 with explicit board defaults and targets.
+- Expanded CI to build SIM7000G, generic ESP32 UART modem, generic ESP32-S3
+  UART modem, SIM7080-S3 and SIM7670-S3 with explicit defaults and targets.
+- Documented active sdkconfig precedence, local defaults and fresh builds.
 
 ### Verified
 
 - ESP-IDF 5.5.5 builds for all four CI profiles with registry dependencies.
 - All ten `smonitor-i2c` sensor profiles pass profile validation.
+- Local ESP-IDF 5.5.5 build with the custom ESP32-S3 configuration and
+  Octal PSRAM enabled.
 
 ### Notes
 
-- Runtime validation on hardware is pending for ESP-IDF 5.5.5.
+- The A7670E example uses the existing SIM7670 compatibility profile, not a
+  dedicated A7670 driver. A7670-specific GNSS and 2G support are not validated.
+- Compilation with PSRAM enabled does not validate PSRAM on physical hardware.
 
 ## v0.1.4 - LilyGO T-SIM7670G-S3 support
 
