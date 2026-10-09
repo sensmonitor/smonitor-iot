@@ -17,9 +17,20 @@ jobs:
       matrix:
         include:
           - profile: lilygo-sim7000g
-            command: idf.py build
+            target: esp32
+            defaults: examples/lilygo_sim7000g/sdkconfig.defaults
           - profile: generic-esp32-uart-modem
-            command: idf.py -B /tmp/smonitor-iot-generic -D SDKCONFIG=/tmp/smonitor-iot-generic-sdkconfig -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;examples/generic_esp32_uart_modem/sdkconfig.defaults" build
+            target: esp32
+            defaults: examples/generic_esp32_uart_modem/sdkconfig.defaults
+          - profile: generic-esp32s3-uart-modem
+            target: esp32s3
+            defaults: examples/generic_esp32s3_uart_modem/sdkconfig.defaults
+          - profile: lilygo-sim7080-s3
+            target: esp32s3
+            defaults: examples/lilygo_sim7080_s3/sdkconfig.defaults
+          - profile: lilygo-sim7670-s3
+            target: esp32s3
+            defaults: examples/lilygo_sim7670_s3/sdkconfig.defaults
 
     steps:
       - name: Checkout repository
@@ -30,7 +41,12 @@ jobs:
       - name: Build firmware
         uses: espressif/esp-idf-ci-action@v1
         with:
-          esp_idf_version: v5.5.4
-          target: esp32
+          esp_idf_version: v5.5.5
+          target: ${{ matrix.target }}
           path: "."
-          command: ${{ matrix.command }}
+          command: >-
+            idf.py -B build
+            -D IDF_TARGET=${{ matrix.target }}
+            -D SDKCONFIG=build/sdkconfig
+            -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;${{ matrix.defaults }}"
+            build

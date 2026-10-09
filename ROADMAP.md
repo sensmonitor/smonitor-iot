@@ -7,7 +7,7 @@ README and verified through CI and, where relevant, physical hardware tests.
 
 ## Current baseline
 
-- ESP-IDF 5.5.4 is the supported build target.
+- ESP-IDF 5.5.5 is the supported build target.
 - LilyGO T-SIM7000G with SIM7000G is the first hardware-tested board profile.
 - Generic ESP32 UART modem is a build-tested configurable starting point.
 - SIM7000 is the first supported modem profile.

@@ -25,7 +25,9 @@ sends samples to the SensMonitor WebSocket endpoint.
 | LilyGO T-SIM7670G S3 | SIM7670G | UART/PPPoS | Configurable I2C | Build-tested |
 | Generic ESP32 + UART | SIM7000 | UART/PPPoS | Configurable I2C | Build-tested |
 
-The tested build uses ESP-IDF 5.5.4. Additional board and modem profiles are
+CI is configured for ESP-IDF 5.5.5. The local build uses the ESP-IDF installation
+activated in your shell or selected in the IDE; check it with `idf.py --version`.
+Additional board and modem profiles are
 planned; they are not considered supported until their complete PPP and
 telemetry flow has been verified on physical hardware.
 
@@ -97,7 +99,7 @@ absolute local path.
 ## Requirements
 
 - Microsoft Visual Studio Code with the Espressif IDF extension, or a command
-  line ESP-IDF 5.5.4 installation
+  line ESP-IDF 5.5.5 installation
 - Git
 - LilyGO T-SIM7000G board
 - SIM card with data enabled
@@ -132,9 +134,9 @@ recommended setup for the first build.
 3. Search for and install the official **Espressif IDF** extension.
 4. Open the Command Palette with `Ctrl+Shift+P`.
 5. Run `ESP-IDF: Open ESP-IDF Installation Manager`.
-6. Install ESP-IDF 5.5.4 and its tools.
+6. Install ESP-IDF 5.5.5 and its tools.
 7. Run `ESP-IDF: Select Current ESP-IDF Version` and select the installed
-   ESP-IDF 5.5.4 setup.
+   ESP-IDF 5.5.5 setup.
 
 Use `ESP-IDF: Doctor Command` if the extension reports a tool or environment
 problem. See the official
@@ -215,7 +217,7 @@ shown in [Expected Log Flow](#expected-log-flow).
 
 ## Command-Line Build
 
-Activate ESP-IDF 5.5.4, then build. Internet access is required during the
+Activate ESP-IDF 5.5.5, then build. Internet access is required during the
 first build so Component Manager can download dependencies:
 
 ```bash
@@ -243,6 +245,32 @@ idf.py -p /dev/ttyACM0 flash monitor
 Use the serial port for your board if it differs.
 
 ## Configuration
+
+`sdkconfig` contains the active build configuration. The root
+`sdkconfig.defaults` and then `sdkconfig.defaults.local` provide initial values;
+they do not overwrite values already present in `sdkconfig`. Editing the local
+defaults alone therefore does not reliably change an existing build.
+
+Use `idf.py menuconfig` to change the active configuration. Also record the
+desired values in `sdkconfig.defaults.local` to preserve them when generating a
+new configuration. To apply defaults to a fresh configuration without deleting
+the current one, use a new build directory and a new sdkconfig path:
+
+```bash
+idf.py -B build/from-defaults -D SDKCONFIG=build/from-defaults/sdkconfig -D IDF_TARGET=esp32s3 build
+```
+
+Continue using that same build directory for flashing. `fullclean` does not
+reset `sdkconfig`. Selecting a board in menuconfig does not load a file from
+`examples/`; example defaults must be explicitly included in `SDKCONFIG_DEFAULTS`.
+An explicit `SDKCONFIG_DEFAULTS` list must also include `sdkconfig.defaults.local`
+if local overrides are wanted.
+
+The custom ESP32-S3 N8R8 + A7670E UART modem setup is recorded in
+`examples/generic_esp32s3_uart_modem/sdkconfig.defaults`. It uses the existing
+SIM7670 modem profile for compatibility, not a dedicated A7670 driver. Its
+8 MB Octal PSRAM is enabled at 80 MHz. The original generic ESP32/SIM7000 example remains
+in `examples/generic_esp32_uart_modem/`.
 
 Configuration is stored in ESP-IDF `sdkconfig`. You can edit it through
 `idf.py menuconfig` or edit the generated `sdkconfig` file directly for local

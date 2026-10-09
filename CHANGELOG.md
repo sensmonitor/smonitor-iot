@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Changed
+
+- Updated the development and CI ESP-IDF version from 5.5.4 to 5.5.5.
+- Expanded CI to build SIM7000G, generic ESP32 UART modem, SIM7080-S3,
+  and SIM7670-S3 with explicit board defaults and targets.
+
+### Verified
+
+- ESP-IDF 5.5.5 builds for all four CI profiles with registry dependencies.
+- All ten `smonitor-i2c` sensor profiles pass profile validation.
+
+### Notes
+
+- Runtime validation on hardware is pending for ESP-IDF 5.5.5.
+
 ## v0.1.4 - LilyGO T-SIM7670G-S3 support
 
 ### Added

@@ -46,7 +46,7 @@ dependencies:
   idf:
     source:
       type: idf
-    version: 5.5.4
+    version: 5.5.5
   sensmonitor/smonitor-i2c:
     component_hash: 64fb25f5a082f54da8caa29bdff079638247a0cb41dce4b93c54342ce10f458f
     dependencies:
