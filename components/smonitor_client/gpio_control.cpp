@@ -67,3 +67,14 @@ void applyDigitalIoConfig(DeviceConfig &config)
         }
     }
 }
+
+void setDigitalOutput(int pin, bool value)
+{
+    if (!validGpioPin(pin)) {
+        ESP_LOGW(TAG, "Skipping invalid digital output pin: %d", pin);
+        return;
+    }
+
+    gpio_set_level(static_cast<gpio_num_t>(pin), value ? 1 : 0);
+    ESP_LOGI(TAG, "Set digital output pin=%d value=%d", pin, value ? 1 : 0);
+}

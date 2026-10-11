@@ -3,6 +3,7 @@
 #include "gpio_control.hpp"
 #include "json_client.hpp"
 #include "smonitor_client.h"
+#include "smonitor_plc.h"
 #include "time_sync.hpp"
 #include "esp_log.h"
 #include "esp_system.h"
@@ -13,12 +14,14 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <vector>
 
 static const char *TAG = "smonitor_client";
 
 static constexpr int kConnectAttempts = 30;
 static constexpr int kConnectPollMs = 1000;
 static constexpr int kConfigRetryMs = 5000;
+static constexpr int kDigitalIoOutputType = 2;
 
 extern const uint8_t isrgrootx1_pem_start[] asm("_binary_isrgrootx1_pem_start");
 extern const uint8_t isrgrootx1_pem_end[] asm("_binary_isrgrootx1_pem_end");
@@ -58,6 +61,105 @@ void logWebsocketError(const esp_websocket_event_data_t *data)
              data->error_handle.esp_transport_sock_errno == 0 ? "n/a" : strerror(data->error_handle.esp_transport_sock_errno));
 }
 
+uint32_t ruleRevision(const std::string &updated_at)
+{
+    // FNV-1a: a changed updated_at means an edited rule.
+    uint32_t hash = 2166136261u;
+    for (const char character : updated_at) {
+        hash ^= static_cast<uint8_t>(character);
+        hash *= 16777619u;
+    }
+
+    return hash;
+}
+
+/**
+ * Translate server rules for smonitor_plc: sensor id -> sample type, operator slug -> enum.
+ */
+void applyPlcRules(const std::vector<PlcRuleConfig> &rules, const std::vector<SensorConfig> &sensors)
+{
+    std::vector<smonitor_plc_rule_t> plc_rules;
+    plc_rules.reserve(rules.size());
+
+    for (const PlcRuleConfig &rule : rules) {
+        const SensorConfig *sensor = nullptr;
+        for (const SensorConfig &sensor_config : sensors) {
+            if (sensor_config.id == rule.sensor_id) {
+                sensor = &sensor_config;
+                break;
+            }
+        }
+
+        const char *sample_type = sensor != nullptr ? sensorSampleType(sensor->type) : nullptr;
+        smonitor_plc_operator_t op;
+
+        if (sample_type == nullptr) {
+            ESP_LOGW(TAG, "Skipping PLC rule #%d: sensor %d is not configured.", rule.id, rule.sensor_id);
+            continue;
+        }
+        if (!smonitor_plc_operator_from_slug(rule.operator_slug.c_str(), &op)) {
+            ESP_LOGW(TAG, "Skipping PLC rule #%d: unknown operator %s.", rule.id, rule.operator_slug.c_str());
+            continue;
+        }
+
+        smonitor_plc_rule_t plc_rule = {};
+        plc_rule.id = rule.id;
+        plc_rule.sensor_id = rule.sensor_id;
+        strlcpy(plc_rule.sample_type, sample_type, sizeof(plc_rule.sample_type));
+        plc_rule.op = op;
+        plc_rule.input_value = rule.input_value;
+        plc_rule.output_id = rule.digital_output;
+        plc_rule.output_value = rule.output_value;
+        plc_rule.enabled = rule.enabled;
+        plc_rule.revision = ruleRevision(rule.updated_at);
+        plc_rules.push_back(plc_rule);
+    }
+
+    smonitor_plc_set_rules(plc_rules.data(), plc_rules.size());
+}
+
+/**
+ * smonitor_plc output callback: this client owns the outputs, sets the GPIO
+ * and marks the rule, which is reported with the next sample.
+ */
+void onPlcOutput(int rule_id, int output_id, bool value, void *ctx)
+{
+    (void)ctx;
+
+    if (config_mutex == nullptr) {
+        return;
+    }
+
+    xSemaphoreTake(config_mutex, portMAX_DELAY);
+    DigitalIoConfig *output = nullptr;
+    for (DigitalIoConfig &digital_io : device_config.digital_ios) {
+        if (digital_io.id == output_id && digital_io.type == kDigitalIoOutputType) {
+            output = &digital_io;
+            break;
+        }
+    }
+
+    if (output == nullptr) {
+        xSemaphoreGive(config_mutex);
+        ESP_LOGW(TAG, "PLC rule #%d: output %d is not configured.", rule_id, output_id);
+        return;
+    }
+
+    if (output->value == value) {
+        xSemaphoreGive(config_mutex);
+        ESP_LOGI(TAG, "PLC rule #%d: output %d is already %s.", rule_id, output_id, value ? "ON" : "OFF");
+        return;
+    }
+
+    setDigitalOutput(output->pin, value);
+    output->value = value;
+    output->desired_value = value;
+    output->plc_rule = rule_id;
+    xSemaphoreGive(config_mutex);
+
+    ESP_LOGI(TAG, "PLC rule #%d: output %d set %s.", rule_id, output_id, value ? "ON" : "OFF");
+}
+
 void storeDeviceConfig(DeviceConfig config)
 {
     if (config_mutex == nullptr) {
@@ -65,6 +167,10 @@ void storeDeviceConfig(DeviceConfig config)
     }
 
     applyDigitalIoConfig(config);
+
+    if (config.has_plc_rules) {
+        applyPlcRules(config.plc_rules, config.sensors);
+    }
 
     xSemaphoreTake(config_mutex, portMAX_DELAY);
     device_config = config;
@@ -335,6 +441,10 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
                 updateDigitalIoConfig(digital_ios);
                 ESP_LOGI(TAG, "Applied digital I/O config from ack with %d rows.", static_cast<int>(digital_ios.size()));
             }
+            std::vector<PlcRuleConfig> plc_rules;
+            if (handlePlcRulesPayload(payload, plc_rules)) {
+                applyPlcRules(plc_rules, getDeviceConfig().sensors);
+            }
         } else if (isRegistrationRequiredPayload(payload)) {
             registration_required = true;
             if (config_semaphore != nullptr) {
@@ -432,6 +542,7 @@ extern "C" esp_err_t smonitor_client_start(const char *serial)
         return ESP_ERR_INVALID_ARG;
     }
 
+    smonitor_plc_init(onPlcOutput, nullptr);
     init_time_sync();
     wait_for_time_sync(CONFIG_SMONITOR_CLIENT_TIME_SYNC_RETRIES);
     initWSClient(serial);

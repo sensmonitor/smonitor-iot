@@ -28,3 +28,18 @@ double normalizeSampleValue(SensorType type, double value)
         return value;
     }
 }
+
+const char *sensorSampleType(SensorType type)
+{
+    switch (type) {
+    case SensorType::Temperature:
+        return "temperature";
+    case SensorType::Humidity:
+        return "humidity";
+    case SensorType::Pressure:
+        return "pressure";
+    case SensorType::Unknown:
+    default:
+        return nullptr;
+    }
+}

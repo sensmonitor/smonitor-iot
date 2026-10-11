@@ -9,18 +9,8 @@ const smonitor_i2c_sample_t *findSample(
     std::size_t sample_count,
     SensorType type)
 {
-    const char *expected = nullptr;
-    switch (type) {
-    case SensorType::Temperature:
-        expected = "temperature";
-        break;
-    case SensorType::Humidity:
-        expected = "humidity";
-        break;
-    case SensorType::Pressure:
-        expected = "pressure";
-        break;
-    default:
+    const char *expected = sensorSampleType(type);
+    if (expected == nullptr) {
         return nullptr;
     }
     for (std::size_t index = 0; index < sample_count; ++index) {
@@ -108,6 +98,7 @@ bool parseSensorConfig(cJSON *sensor_node, SensorConfig &sensor_config)
         return false;
     }
 
+    cJSON *id_item = cJSON_GetObjectItemCaseSensitive(sensor_node, "id");
     cJSON *serial_item = cJSON_GetObjectItemCaseSensitive(sensor_node, "serial");
     cJSON *type_item = cJSON_GetObjectItemCaseSensitive(sensor_node, "type");
     if (!cJSON_IsString(serial_item) || serial_item->valuestring == nullptr) {
@@ -119,9 +110,62 @@ bool parseSensorConfig(cJSON *sensor_node, SensorConfig &sensor_config)
         return false;
     }
 
+    sensor_config.id = cJSON_IsNumber(id_item) ? id_item->valueint : 0;
     sensor_config.serial = serial_item->valuestring;
     sensor_config.type = sensor_type;
     return true;
+}
+
+bool parsePlcRuleConfig(cJSON *rule_node, PlcRuleConfig &rule_config)
+{
+    if (!cJSON_IsObject(rule_node)) {
+        return false;
+    }
+
+    cJSON *id_item = cJSON_GetObjectItemCaseSensitive(rule_node, "id");
+    cJSON *sensor_item = cJSON_GetObjectItemCaseSensitive(rule_node, "sensor");
+    cJSON *operator_item = cJSON_GetObjectItemCaseSensitive(rule_node, "operator");
+    cJSON *input_value_item = cJSON_GetObjectItemCaseSensitive(rule_node, "input_value");
+    cJSON *digital_output_item = cJSON_GetObjectItemCaseSensitive(rule_node, "digital_output");
+    cJSON *output_value_item = cJSON_GetObjectItemCaseSensitive(rule_node, "output_value");
+    cJSON *enabled_item = cJSON_GetObjectItemCaseSensitive(rule_node, "enabled");
+    cJSON *updated_at_item = cJSON_GetObjectItemCaseSensitive(rule_node, "updated_at");
+    cJSON *slug_item = cJSON_IsObject(operator_item)
+        ? cJSON_GetObjectItemCaseSensitive(operator_item, "slug")
+        : nullptr;
+
+    if (!cJSON_IsNumber(id_item) || !cJSON_IsNumber(sensor_item) ||
+        !cJSON_IsString(slug_item) || slug_item->valuestring == nullptr ||
+        !cJSON_IsNumber(input_value_item) || !cJSON_IsNumber(digital_output_item) ||
+        !cJSON_IsBool(output_value_item)) {
+        return false;
+    }
+
+    rule_config.id = id_item->valueint;
+    rule_config.sensor_id = sensor_item->valueint;
+    rule_config.operator_slug = slug_item->valuestring;
+    rule_config.input_value = input_value_item->valuedouble;
+    rule_config.digital_output = digital_output_item->valueint;
+    rule_config.output_value = cJSON_IsTrue(output_value_item);
+    rule_config.enabled = cJSON_IsBool(enabled_item) && cJSON_IsTrue(enabled_item);
+    rule_config.updated_at = cJSON_IsString(updated_at_item) && updated_at_item->valuestring != nullptr
+        ? updated_at_item->valuestring
+        : "";
+    return true;
+}
+
+std::vector<PlcRuleConfig> parsePlcRuleArray(cJSON *rules_item)
+{
+    std::vector<PlcRuleConfig> rules;
+    cJSON *rule_node = nullptr;
+    cJSON_ArrayForEach(rule_node, rules_item) {
+        PlcRuleConfig rule_config;
+        if (parsePlcRuleConfig(rule_node, rule_config)) {
+            rules.push_back(rule_config);
+        }
+    }
+
+    return rules;
 }
 
 bool parseDigitalIoConfig(cJSON *digital_io_node, DigitalIoConfig &digital_io_config)
@@ -195,6 +239,12 @@ bool parseDeviceConfigNode(cJSON *config_node, DeviceConfig &config)
                 parsed_config.digital_ios.push_back(digital_io_config);
             }
         }
+    }
+
+    cJSON *plc_rules_item = cJSON_GetObjectItemCaseSensitive(config_node, "plc_rules");
+    if (cJSON_IsArray(plc_rules_item)) {
+        parsed_config.plc_rules = parsePlcRuleArray(plc_rules_item);
+        parsed_config.has_plc_rules = true;
     }
 
     if (parsed_config.sensors.empty()) {
@@ -410,6 +460,10 @@ std::string formatJSON(const smonitor_i2c_sample_t *samples,
 
         cJSON_AddNumberToObject(digital_io, "pin", digital_io_config.pin);
         cJSON_AddBoolToObject(digital_io, "value", digital_io_config.value);
+
+        if (digital_io_config.plc_rule > 0) {
+            cJSON_AddNumberToObject(digital_io, "plc_rule", digital_io_config.plc_rule);
+        }
     }
 
     cJSON *location = cJSON_CreateObject();
@@ -430,4 +484,35 @@ std::string formatJSON(const smonitor_i2c_sample_t *samples,
     }
 
     return json;
+}
+
+bool handlePlcRulesPayload(const std::string &payload, std::vector<PlcRuleConfig> &rules)
+{
+    cJSON *root = cJSON_ParseWithLength(payload.c_str(), payload.size());
+    if (root == nullptr) {
+        return false;
+    }
+
+    cJSON *nested = nullptr;
+    cJSON *rules_item = cJSON_GetObjectItemCaseSensitive(root, "plc_rules");
+    cJSON *data = cJSON_GetObjectItemCaseSensitive(root, "data");
+
+    if (!cJSON_IsArray(rules_item) && cJSON_IsObject(data)) {
+        rules_item = cJSON_GetObjectItemCaseSensitive(data, "plc_rules");
+    } else if (!cJSON_IsArray(rules_item) && cJSON_IsString(data) && data->valuestring != nullptr) {
+        nested = cJSON_Parse(data->valuestring);
+        rules_item = nested != nullptr ? cJSON_GetObjectItemCaseSensitive(nested, "plc_rules") : nullptr;
+    }
+
+    // A missing array keeps the current rules, an empty array clears them.
+    const bool found = cJSON_IsArray(rules_item);
+    if (found) {
+        rules = parsePlcRuleArray(rules_item);
+    }
+
+    if (nested != nullptr) {
+        cJSON_Delete(nested);
+    }
+    cJSON_Delete(root);
+    return found;
 }

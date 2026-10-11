@@ -17,3 +17,4 @@ std::string formatJSON(const smonitor_i2c_sample_t *samples,
 cJSON *resolveConfigNode(cJSON *root, bool &should_delete);
 bool handleDeviceConfigPayload(const std::string &payload, DeviceConfig &config);
 bool handleDigitalIoConfigPayload(const std::string &payload, std::vector<DigitalIoConfig> &digital_ios);
+bool handlePlcRulesPayload(const std::string &payload, std::vector<PlcRuleConfig> &rules);

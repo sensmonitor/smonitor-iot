@@ -8,7 +8,7 @@ idf_component_register(
         "device_identity.cpp"
         "sensor_runtime.cpp"
     INCLUDE_DIRS "."
-    REQUIRES driver smonitor_client smonitor-modem smonitor-i2c smonitor_battery
+    REQUIRES driver smonitor_client smonitor-modem smonitor-i2c smonitor_battery smonitor_plc
 )
 
 if(CONFIG_SMONITOR_BOARD_GENERIC_ESP32_UART)

@@ -12,6 +12,7 @@
 #include "smonitor_battery.h"
 #include "smonitor_client.h"
 #include "smonitor_modem.h"
+#include "smonitor_plc.h"
 
 namespace {
 
@@ -191,6 +192,9 @@ void smonitor_app_run(void)
 
         logSamples(samples, sample_count);
         if (read_result == ESP_OK) {
+            // Output changes made by PLC rules are reported with this sample.
+            smonitor_plc_apply(samples, sample_count);
+
             const esp_err_t send_result =
                 smonitor_client_send_samples(samples, sample_count,
                                              battery_percent, &location);
