@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.2.0 - 2026-10-13
+
+### Added
+
+- Added the `smonitor_plc` component for local PLC rules. A rule switches a
+  digital output when a sensor value crosses a threshold (`>`, `<`, `>=`,
+  `<=`); it fires only on the crossing and on its first valid sample.
+- Evaluated PLC rules on every I2C sensor read, before the sample is sent.
+- Parsed `plc_rules` from the device configuration and from every sample ack.
+- Reported the firing rule as `plc_rule` with the changed output, so the server
+  can notify every user who follows the device.
+- Parsed sensor ids from the device configuration.
+
+### Changed
+
+- `smonitor_client` owns PLC output changes through an output callback; the
+  PLC component does not access GPIO directly.
+- Sensor type to sample type mapping is shared by sample payloads and PLC rules.
+
+### Verified
+
+- ESP-IDF 5.5.5 build for the ESP32-S3 profile with no new compiler warnings.
+- Host test of the PLC logic: threshold crossing, first sample, hysteresis with
+  two rules, failed reads, unchanged rules from acks, edited and disabled rules.
+- Local end-to-end test with the SensMonitor API: rule fired, output switched
+  and push notification sent.
+
+### Notes
+
+- Requires a SensMonitor API with PLC support. Without it the firmware behaves
+  as before; older firmware ignores PLC rules sent by a newer API.
+- Rules are kept in RAM only. After a restart, PLC is active again once the
+  device configuration is received.
+- Sensors are matched to samples by type, the same as sample payloads, so two
+  sensors of the same type map to the first sample of that type.
+- Rules are sent with every sample ack; a compact rules hash is planned to
+  reduce mobile data usage.
+
 ## v0.1.5 - 2026-10-09
 
 ### Added
