@@ -25,7 +25,7 @@ sends samples to the SensMonitor WebSocket endpoint.
 | LilyGO T-SIM7670G S3 | SIM7670G | UART/PPPoS | Configurable I2C | Build-tested |
 | Generic ESP32 + UART | SIM7000 | UART/PPPoS | Configurable I2C | Build-tested |
 
-CI is configured for ESP-IDF 5.5.5. The local build uses the ESP-IDF installation
+CI is configured for ESP-IDF 5.5.6. The local build uses the ESP-IDF installation
 activated in your shell or selected in the IDE; check it with `idf.py --version`.
 Additional board and modem profiles are
 planned; they are not considered supported until their complete PPP and
@@ -99,7 +99,7 @@ absolute local path.
 ## Requirements
 
 - Microsoft Visual Studio Code with the Espressif IDF extension, or a command
-  line ESP-IDF 5.5.5 installation
+  line ESP-IDF 5.5.6 installation
 - Git
 - LilyGO T-SIM7000G board
 - SIM card with data enabled
@@ -134,9 +134,9 @@ recommended setup for the first build.
 3. Search for and install the official **Espressif IDF** extension.
 4. Open the Command Palette with `Ctrl+Shift+P`.
 5. Run `ESP-IDF: Open ESP-IDF Installation Manager`.
-6. Install ESP-IDF 5.5.5 and its tools.
+6. Install ESP-IDF 5.5.6 and its tools.
 7. Run `ESP-IDF: Select Current ESP-IDF Version` and select the installed
-   ESP-IDF 5.5.5 setup.
+   ESP-IDF 5.5.6 setup.
 
 Use `ESP-IDF: Doctor Command` if the extension reports a tool or environment
 problem. See the official
@@ -217,7 +217,7 @@ shown in [Expected Log Flow](#expected-log-flow).
 
 ## Command-Line Build
 
-Activate ESP-IDF 5.5.5, then build. Internet access is required during the
+Activate ESP-IDF 5.5.6, then build. Internet access is required during the
 first build so Component Manager can download dependencies:
 
 ```bash

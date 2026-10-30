@@ -8,11 +8,11 @@ explicit.
 
 ## Development environment
 
-Use ESP-IDF 5.5.5 for development and validation.
+Use ESP-IDF 5.5.6 for development and validation.
 
 The recommended setup is:
 
-- ESP-IDF 5.5.5
+- ESP-IDF 5.5.6
 - ESP32 or ESP32-S3 target, selected for the board profile
 - Visual Studio Code with the Espressif IDF extension, or an equivalent
   command-line ESP-IDF setup
@@ -37,7 +37,7 @@ idf.py -B /tmp/smonitor-iot-generic \
 ```
 
 CI builds LilyGO SIM7000G, generic ESP32 UART modem, LilyGO SIM7080-S3,
-and LilyGO SIM7670-S3 profiles with ESP-IDF 5.5.5.
+and LilyGO SIM7670-S3 profiles with ESP-IDF 5.5.6.
 
 For documentation-only changes, a full firmware build is not required unless
 the documentation changes example commands, configuration names or build

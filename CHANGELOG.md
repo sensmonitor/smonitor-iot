@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Changed
+
+- Updated the development and CI ESP-IDF version from 5.5.5 to 5.5.6.
+
+### Verified
+
+- ESP-IDF 5.5.6 builds for the ESP32-S3 profile and the LilyGO SIM7000G
+  profile with no compiler warnings.
+
+### Notes
+
+- Runtime validation on hardware is pending for ESP-IDF 5.5.6.
+
 ## v0.2.0 - 2026-10-13
 
 ### Added
