@@ -142,9 +142,17 @@ void smonitor_app_run(void)
 #endif
 
     if (CONFIG_SMONITOR_MODEM_APN[0] == '\0') {
-        ESP_LOGE(TAG,
-                 "APN is empty. Configure SensMonitor IoT > Mobile network APN.");
-        return;
+        // Without an APN the modem cannot connect. Repeat the reminder so it is
+        // visible no matter when the serial monitor is opened.
+        constexpr int kApnReminderIntervalMs = 10000;
+        while (true) {
+            ESP_LOGE(TAG,
+                     "APN is empty. Set CONFIG_SMONITOR_MODEM_APN in "
+                     "sdkconfig.defaults.local or menuconfig (SensMonitor IoT > Mobile network APN), "
+                     "then rebuild and flash.");
+            ESP_LOGI(TAG, "Device serial: %s", serial.c_str());
+            vTaskDelay(pdMS_TO_TICKS(kApnReminderIntervalMs));
+        }
     }
 
     smonitor_modem_config_t modem_config = smonitor_board_modem_config();

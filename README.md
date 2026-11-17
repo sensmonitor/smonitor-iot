@@ -266,8 +266,9 @@ cd smonitor-iot
 cp sdkconfig.defaults.local.example sdkconfig.defaults.local
 ```
 
-Set the operator APN in `sdkconfig.defaults.local`, then build, flash and
-monitor the environment for your board (see the
+Set the operator APN in `sdkconfig.defaults.local` (the first PlatformIO build
+creates the file from the example if it is missing, and upload is stopped while
+the APN is empty), then build, flash and monitor the environment for your board (see the
 [Hardware Support](#hardware-support) table):
 
 ```bash
@@ -484,13 +485,18 @@ DEVICE_NOT_REGISTERED: Register SM-ESP32-... in the SensMonitor application.
 
 ### APN Is Empty
 
-Log:
+Log, repeated every 10 seconds together with the device serial:
 
 ```text
-APN is empty. Configure SensMonitor IoT > Mobile network APN.
+APN is empty. Set CONFIG_SMONITOR_MODEM_APN in sdkconfig.defaults.local or menuconfig (SensMonitor IoT > Mobile network APN), then rebuild and flash.
 ```
 
-Set `CONFIG_SMONITOR_MODEM_APN` in `sdkconfig` or `idf.py menuconfig`.
+Set `CONFIG_SMONITOR_MODEM_APN` in `sdkconfig.defaults.local` and regenerate
+the configuration, or use `idf.py menuconfig` / `pio run -e <env> -t menuconfig`.
+Builds also warn while the APN is empty: `idf.py` prints a CMake warning, and
+PlatformIO prints a notice after the build and stops `upload`. To upload with
+an empty APN anyway, for example to read the device serial before the SIM card
+is ready, run `SMONITOR_ALLOW_EMPTY_APN=1 pio run -e <env> -t upload`.
 
 ### PPP Does Not Get an IP
 

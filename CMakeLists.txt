@@ -23,3 +23,10 @@ if(DEFINED SMONITOR_DEPENDENCIES_LOCK)
 endif()
 
 project(smonitor_iot)
+
+if(CONFIG_SMONITOR_MODEM_APN STREQUAL "")
+    message(WARNING
+        "SensMonitor: CONFIG_SMONITOR_MODEM_APN is empty. The device will not "
+        "connect to the cellular network. Set it in sdkconfig.defaults.local "
+        "(then regenerate sdkconfig) or with menuconfig: SensMonitor IoT > Mobile network APN.")
+endif()
