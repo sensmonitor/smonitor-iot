@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.2.2 - 2026-11-17
+
+### Added
+
+- Added PlatformIO support with the official `platformio/espressif32` platform
+  and the ESP-IDF framework: one environment per board profile in
+  `platformio.ini`, a PlatformIO CI workflow and VS Code project settings.
+- Added the Waveshare ESP32-S3-A7670E-4G board profile
+  (`examples/waveshare_esp32s3_a7670e`, PlatformIO environment
+  `waveshare-esp32s3-a7670e`), built in the ESP-IDF and PlatformIO CI.
+- Added a PlatformIO pre-script that creates `sdkconfig.defaults.local` from
+  the example on the first build, warns after every build while the APN is
+  empty and stops upload until it is set (`SMONITOR_ALLOW_EMPTY_APN=1`
+  overrides it).
+
+### Changed
+
+- CMake prints a warning when `CONFIG_SMONITOR_MODEM_APN` is empty.
+- With an empty APN the firmware repeats the configuration reminder and the
+  device serial every 10 seconds instead of logging it once and returning.
+- Board profiles can be selected with `SMONITOR_BOARD_DEFAULTS` and a per-build
+  component lock file with `SMONITOR_DEPENDENCIES_LOCK`, for both PlatformIO
+  and `idf.py`.
+
+### Notes
+
+- PlatformIO currently provides ESP-IDF 5.5.5; the ESP-IDF build and CI use
+  ESP-IDF 5.5.6.
+- The Waveshare A7670E profile uses the SIM7670 compatibility profile; GNSS and
+  2G are not validated. Runtime validation on hardware is pending.
+
 ## v0.2.1 - 2026-11-11
 
 ### Changed
