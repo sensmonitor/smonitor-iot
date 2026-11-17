@@ -5,3 +5,9 @@ sdkconfig.old
 sdkconfig.defaults.local
 .clangd
 .vscode/settings.json
+
+# PlatformIO
+.pio/
+sdkconfig.lilygo-*
+sdkconfig.waveshare-*
+sdkconfig.generic-*

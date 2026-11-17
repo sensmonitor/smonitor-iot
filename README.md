@@ -1,8 +1,10 @@
 # SensMonitor IoT — ESP32 Cellular Firmware
 
 [![ESP-IDF](https://github.com/sensmonitor/smonitor-iot/actions/workflows/esp-idf.yml/badge.svg)](https://github.com/sensmonitor/smonitor-iot/actions/workflows/esp-idf.yml)
+[![PlatformIO](https://github.com/sensmonitor/smonitor-iot/actions/workflows/platformio.yml/badge.svg)](https://github.com/sensmonitor/smonitor-iot/actions/workflows/platformio.yml)
 
-Open-source ESP-IDF firmware for ESP32 cellular IoT devices. The first
+Open-source ESP-IDF firmware for ESP32 cellular IoT devices. Build it with
+ESP-IDF or [PlatformIO](#build-with-platformio). The first
 hardware-tested profile supports the LilyGO T-SIM7000G with a SIM7000 modem,
 PPPoS connectivity over UART, NB-IoT/LTE-M/GPRS, GNSS, BME280 and secure
 WebSocket telemetry.
@@ -13,17 +15,20 @@ sends samples to the SensMonitor WebSocket endpoint.
 
 [SensMonitor Web App](https://app.sensmonitor.com/) |
 [LilyGO T-SIM7000G integration guide](https://sensmonitor.com/lilygo-iot-integrations/lilygo-t-sim7000g/) |
+[Build with PlatformIO](#build-with-platformio) |
 [Roadmap](ROADMAP.md) |
 [Contributing](CONTRIBUTING.md)
 
 ## Hardware Support
 
-| Board | Modem | Connection | Sensor | Status |
-| --- | --- | --- | --- | --- |
-| LilyGO T-SIM7000G | SIM7000G | UART/PPPoS | BME280 | Hardware-tested |
-| LilyGO T-SIM7080 S3 | SIM7080G | UART/PPPoS | Configurable I2C | Build-tested |
-| LilyGO T-SIM7670G S3 | SIM7670G | UART/PPPoS | Configurable I2C | Build-tested |
-| Generic ESP32 + UART | SIM7000 | UART/PPPoS | Configurable I2C | Build-tested |
+| Board | Modem | Connection | Sensor | Status | PlatformIO env |
+| --- | --- | --- | --- | --- | --- |
+| LilyGO T-SIM7000G | SIM7000G | UART/PPPoS | BME280 | Hardware-tested | `lilygo-t-sim7000g` |
+| LilyGO T-SIM7080 S3 | SIM7080G | UART/PPPoS | Configurable I2C | Build-tested | `lilygo-t-sim7080-s3` |
+| LilyGO T-SIM7670G S3 | SIM7670G | UART/PPPoS | Configurable I2C | Build-tested | `lilygo-t-sim7670-s3` |
+| Waveshare ESP32-S3-A7670E-4G | A7670E (SIM7670 profile) | UART/PPPoS | Configurable I2C | Build-tested | `waveshare-esp32s3-a7670e` |
+| Generic ESP32 + UART | SIM7000 | UART/PPPoS | Configurable I2C | Build-tested | `generic-esp32-uart-modem` |
+| Generic ESP32-S3 + UART | SIM7670 / A7670E | UART/PPPoS | Configurable I2C | Build-tested | `generic-esp32s3-uart-modem` |
 
 CI is configured for ESP-IDF 5.5.6. The local build uses the ESP-IDF installation
 activated in your shell or selected in the IDE; check it with `idf.py --version`.
@@ -98,8 +103,9 @@ absolute local path.
 
 ## Requirements
 
-- Microsoft Visual Studio Code with the Espressif IDF extension, or a command
-  line ESP-IDF 5.5.6 installation
+- Microsoft Visual Studio Code with the Espressif IDF extension, a command
+  line ESP-IDF 5.5.6 installation, or PlatformIO (see
+  [Build With PlatformIO](#build-with-platformio))
 - Git
 - LilyGO T-SIM7000G board
 - SIM card with data enabled
@@ -243,6 +249,55 @@ idf.py -p /dev/ttyACM0 flash monitor
 ```
 
 Use the serial port for your board if it differs.
+
+## Build With PlatformIO
+
+The repository includes a `platformio.ini` with one environment per board
+profile. PlatformIO downloads ESP-IDF 5.5.5 and the matching toolchain on the
+first build; no separate ESP-IDF installation is needed. It uses the official
+`platformio/espressif32` platform with the ESP-IDF framework, not Arduino.
+
+In Visual Studio Code, install the **PlatformIO IDE** extension and open the
+cloned `smonitor-iot` folder. On the command line, install PlatformIO Core.
+
+```bash
+git clone https://github.com/sensmonitor/smonitor-iot.git
+cd smonitor-iot
+cp sdkconfig.defaults.local.example sdkconfig.defaults.local
+```
+
+Set the operator APN in `sdkconfig.defaults.local`, then build, flash and
+monitor the environment for your board (see the
+[Hardware Support](#hardware-support) table):
+
+```bash
+pio run -e waveshare-esp32s3-a7670e -t upload -t monitor
+```
+
+In Visual Studio Code, select the environment in the PlatformIO status bar
+and use **Upload and Monitor**. Add `--upload-port /dev/ttyACM0` (or `COM5` on
+Windows) if the port is not detected automatically.
+
+How the configuration is assembled for a PlatformIO environment:
+
+1. `sdkconfig.defaults` (shared settings).
+2. `sdkconfig.defaults.local` (APN, sensor selection and other local settings).
+3. The board profile from `examples/<board>/sdkconfig.defaults`, which sets
+   the target, pins, modem profile and flash layout for that board.
+
+Each environment keeps its active configuration in `sdkconfig.<env>` and its
+component lock file in `.pio/`, so switching boards does not rewrite the
+committed `dependencies.lock`. As with `idf.py`, defaults do not overwrite
+values that already exist in `sdkconfig.<env>`. Use
+`pio run -e <env> -t menuconfig` to change it, or delete `sdkconfig.<env>`
+to regenerate it from the defaults.
+
+The same board profile ordering is available to `idf.py` users:
+
+```bash
+idf.py -D SMONITOR_BOARD_DEFAULTS=examples/lilygo_sim7000g/sdkconfig.defaults \
+  -D SDKCONFIG=build/sdkconfig -D IDF_TARGET=esp32 build
+```
 
 ## Configuration
 
@@ -525,6 +580,14 @@ smonitor-iot/
       sdkconfig.defaults
     lilygo_sim7080_s3/
       sdkconfig.defaults
+    lilygo_sim7670_s3/
+      sdkconfig.defaults
+    waveshare_esp32s3_a7670e/
+      sdkconfig.defaults
+    generic_esp32s3_uart_modem/
+      sdkconfig.defaults
+
+  platformio.ini
 ```
 
 `main` owns the application flow, board pin assignments and modem power

@@ -31,6 +31,9 @@ jobs:
           - profile: lilygo-sim7670-s3
             target: esp32s3
             defaults: examples/lilygo_sim7670_s3/sdkconfig.defaults
+          - profile: waveshare-esp32s3-a7670e
+            target: esp32s3
+            defaults: examples/waveshare_esp32s3_a7670e/sdkconfig.defaults
 
     steps:
       - name: Checkout repository

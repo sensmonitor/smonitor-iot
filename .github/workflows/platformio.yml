@@ -1,0 +1,47 @@
+name: PlatformIO
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.env }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - lilygo-t-sim7000g
+          - lilygo-t-sim7080-s3
+          - lilygo-t-sim7670-s3
+          - waveshare-esp32s3-a7670e
+          - generic-esp32-uart-modem
+          - generic-esp32s3-uart-modem
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            ~/.cache/pip
+          key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PlatformIO Core
+        run: pip install platformio==6.2.0
+
+      - name: Build firmware
+        run: pio run -e ${{ matrix.env }}
